@@ -36,6 +36,8 @@ type ServerParam struct {
 	Encrypt     bool       // 是否需要加密
 	AesKey      string     // 加密用的key
 	Iv          string     // 加密用的iv
+	Request     *http.Request
+	Response    http.ResponseWriter
 }
 
 //@author xiaolan

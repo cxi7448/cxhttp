@@ -64,15 +64,48 @@ func SetUploadFileSizeLimit(_limit int64) {
 	uploadFileSizeLimit = _limit
 }
 
+type accessContrlAllow struct {
+	Type  string
+	Key   string
+	Value string
+}
+
+var (
+	accessContrlAllowPools = []accessContrlAllow{
+		{
+			Type:  "SET",
+			Key:   "Access-Control-Allow-Origin",
+			Value: "*",
+		},
+		{
+			Type:  "ADD",
+			Key:   "Access-Control-Allow-Headers",
+			Value: "*",
+		},
+		{
+			Type:  "SET",
+			Key:   "Access-Control-Expose-Headers",
+			Value: "Encrypt-Type,Encrypt-iv",
+		},
+	}
+)
+
 // @author xiaolan
 // @lastUpdate 2019-08-09
 // @comment http请求主入口回调
 func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 
 	// 跨域支持
-	rw.Header().Set("Access-Control-Allow-Origin", "*")  //允许访问所有域
-	rw.Header().Add("Access-Control-Allow-Headers", "*") //header的类型
-	rw.Header().Set("Access-Control-Expose-Headers", "Encrypt-Type,Encrypt-iv")
+	for _, row := range accessContrlAllowPools {
+		if row.Type == "SET" {
+			rw.Header().Set(row.Key, row.Value) //允许访问所有域
+		} else {
+			rw.Header().Add(row.Key, row.Value) //允许访问所有域
+		}
+	}
+	//rw.Header().Set("Access-Control-Allow-Origin", "*")  //允许访问所有域
+	//rw.Header().Add("Access-Control-Allow-Headers", "*") //header的类型
+	//rw.Header().Set("Access-Control-Expose-Headers", "Encrypt-Type,Encrypt-iv")
 
 	// 需要过滤的请求文件类型列表
 	filter_file_ext := []string{
@@ -246,6 +279,8 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		UA:          myUA,
 		UAType:      UAToInt(myUA),
 		Proctol:     proctol,
+		Request:     rq,
+		Response:    rw,
 		Port:        "",
 		Language:    myLang,
 		LangType:    clCommon.Uint32(myLang),
