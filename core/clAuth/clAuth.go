@@ -3,9 +3,9 @@ package clAuth
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/lionhart580230/clUtil/clCrypt"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clhttp-framework/clGlobal"
+	"github.com/cxi7448/cxhttp/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"sync"
 	"time"
 )

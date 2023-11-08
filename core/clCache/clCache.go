@@ -2,10 +2,10 @@ package clCache
 
 import (
 	"fmt"
-	"github.com/lionhart580230/clUtil/clCrypt"
-	"github.com/lionhart580230/clUtil/clJson"
-	"github.com/lionhart580230/clUtil/clTime"
-	"github.com/lionhart580230/clhttp-framework/clGlobal"
+	"github.com/cxi7448/cxhttp/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
+	"github.com/cxi7448/cxhttp/clUtil/clTime"
 	"reflect"
 	"strings"
 	"sync"

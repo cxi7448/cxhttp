@@ -1,8 +1,8 @@
 package rule
 
 import (
-	"github.com/lionhart580230/clhttp-framework/clResponse"
-	"github.com/lionhart580230/clhttp-framework/core/clAuth"
+	"github.com/cxi7448/cxhttp/clResponse"
+	"github.com/cxi7448/cxhttp/core/clAuth"
 	"net/http"
 	"sync"
 	"time"

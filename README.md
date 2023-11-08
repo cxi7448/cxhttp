@@ -1,7 +1,7 @@
 #### 如何获取clhttp-framework?
 
 ```
-go get github.com/lionhart580230/clhttp-framework
+go get github.com/cxi7448/cxhttp
 ```
 
 

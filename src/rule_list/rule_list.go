@@ -1,9 +1,9 @@
 package rule_list
 
 import (
-	"github.com/lionhart580230/clhttp-framework/clController/example"
-	"github.com/lionhart580230/clhttp-framework/core/rule"
-	"github.com/lionhart580230/clhttp-framework/core/rule/apis"
+	"github.com/cxi7448/cxhttp/clController/example"
+	"github.com/cxi7448/cxhttp/core/rule"
+	"github.com/cxi7448/cxhttp/core/rule/apis"
 )
 
 func Init() {

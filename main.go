@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clhttp-framework/clGlobal"
-	"github.com/lionhart580230/clhttp-framework/core/clAuth"
-	"github.com/lionhart580230/clhttp-framework/core/httpserver"
-	"github.com/lionhart580230/clhttp-framework/src/rule_list"
+	"github.com/cxi7448/cxhttp/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/core/clAuth"
+	"github.com/cxi7448/cxhttp/core/httpserver"
+	"github.com/cxi7448/cxhttp/src/rule_list"
 )
 
 // HTTP服务默认使用端口号

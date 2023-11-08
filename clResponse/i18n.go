@@ -2,8 +2,8 @@ package clResponse
 
 import (
 	"fmt"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clhttp-framework/clCommon"
+	"github.com/cxi7448/cxhttp/clCommon"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"strings"
 )
 

@@ -1,8 +1,8 @@
 package clAuth
 
 import (
-	"github.com/lionhart580230/clUtil/clJson"
-	"github.com/lionhart580230/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"testing"
 )
 

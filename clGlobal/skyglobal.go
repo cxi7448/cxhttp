@@ -2,11 +2,11 @@ package clGlobal
 
 import (
 	"errors"
-	"github.com/lionhart580230/clUtil/clCrypt"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clUtil/clMysql"
-	"github.com/lionhart580230/clUtil/clRedis"
-	"github.com/lionhart580230/clhttp-framework/core/skyconfig"
+	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/clMysql"
+	"github.com/cxi7448/cxhttp/clUtil/clRedis"
+	"github.com/cxi7448/cxhttp/core/skyconfig"
 	"strings"
 )
 

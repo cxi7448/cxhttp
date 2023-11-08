@@ -1,7 +1,7 @@
 package clGlobal
 
 import (
-	"github.com/lionhart580230/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"sync"
 )
 

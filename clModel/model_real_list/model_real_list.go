@@ -2,9 +2,9 @@ package model_real_list
 
 import (
 	"errors"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clUtil/clReflect"
-	"github.com/lionhart580230/clhttp-framework/clGlobal"
+	"github.com/cxi7448/cxhttp/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/clReflect"
 )
 
 const TableName = "real_list"

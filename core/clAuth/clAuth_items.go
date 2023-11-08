@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lionhart580230/clhttp-framework/clCommon"
+	"github.com/cxi7448/cxhttp/clCommon"
 	"strings"
 )
 

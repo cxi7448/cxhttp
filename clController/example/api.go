@@ -1,10 +1,10 @@
 package example
 
 import (
-	"github.com/lionhart580230/clUtil/clJson"
-	"github.com/lionhart580230/clhttp-framework/clResponse"
-	"github.com/lionhart580230/clhttp-framework/core/clAuth"
-	"github.com/lionhart580230/clhttp-framework/core/rule"
+	"github.com/cxi7448/cxhttp/clResponse"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
+	"github.com/cxi7448/cxhttp/core/clAuth"
+	"github.com/cxi7448/cxhttp/core/rule"
 )
 
 func ApiExample(_auth *clAuth.AuthInfo, _param *rule.HttpParam, _server *rule.ServerParam) string {

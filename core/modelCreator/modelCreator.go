@@ -2,10 +2,10 @@ package modelCreator
 
 import (
 	"fmt"
-	"github.com/lionhart580230/clUtil/clCommon"
-	"github.com/lionhart580230/clUtil/clFile"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clUtil/clMysql"
+	"github.com/cxi7448/cxhttp/clUtil/clCommon"
+	"github.com/cxi7448/cxhttp/clUtil/clFile"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/clMysql"
 	"strings"
 )
 
@@ -15,8 +15,8 @@ const modelTemplatePackage = `package %v
 // 导入文件
 import (
 	"errors"
-	"github.com/lionhart580230/clUtil/clLog"
-	"github.com/lionhart580230/clhttp-framework/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clGlobal"
 )
 `
 

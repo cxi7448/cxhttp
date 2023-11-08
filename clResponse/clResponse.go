@@ -2,7 +2,7 @@ package clResponse
 
 import (
 	"encoding/json"
-	"github.com/lionhart580230/clUtil/clJson"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
 )
 
 // 标准输出json

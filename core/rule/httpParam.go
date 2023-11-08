@@ -1,8 +1,8 @@
 package rule
 
 import (
-	"github.com/lionhart580230/clUtil/clJson"
-	"github.com/lionhart580230/clhttp-framework/clCommon"
+	"github.com/cxi7448/cxhttp/clCommon"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"strconv"
 	"strings"
 )
