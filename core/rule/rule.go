@@ -134,13 +134,17 @@ func DelApiCacheAll(_uri string, _acName string) {
 // @author xiaolan
 // @lastUpdate 2019-08-10
 // @comment 调用规则
-func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *HttpParam, _server *ServerParam) (string, string) {
+func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *HttpParam, _server *ServerParam, ac string) (string, string) {
 	ruleLocker.RLock()
 	defer ruleLocker.RUnlock()
-
 	var acKey = GetRequestAcKey(_uri)
 	// 通过AC获取到指定的路由
-	acName := _param.GetStr(acKey, "")
+	var acName string
+	if ac != "" {
+		acName = ac
+	} else {
+		acName = _param.GetStr(acKey, "")
+	}
 	ruleinfo, exists := ruleList[_uri+"_"+acName]
 	if !exists {
 		if clGlobal.SkyConf.DebugRouter {

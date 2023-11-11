@@ -118,14 +118,17 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 	}
 
 	// 判断路由
-	requestURI := strings.Split(rq.RequestURI, "?")
-	requestArr := strings.Split(requestURI[0], "/")
+	requestURI := rq.URL.EscapedPath()
+	requestArr := strings.Split(requestURI, "/")
 	if len(requestArr) < 2 || requestArr[1] == "" {
 		rw.WriteHeader(404)
 		return
 	}
 	requestName := requestArr[1]
-
+	acName := ""
+	if len(requestArr) > 2 {
+		acName = requestArr[2]
+	}
 	// 过滤请求
 	for _, filterExt := range filter_file_ext {
 		if strings.HasSuffix(requestArr[1], filterExt) {
@@ -202,14 +205,17 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		}
 		rawData = string(xmlBytes[:n])
 	} else if rq.Method == "GET" && len(requestURI) > 1 {
-		GetParams := strings.Split(requestURI[1], "&")
-		for _, paramItem := range GetParams {
-			params := strings.Split(paramItem, "=")
-			if len(params) < 2 {
-				continue
-			}
-			values[params[0]] = params[1]
+		for key, val := range rq.URL.Query() {
+			values[key] = val[0]
 		}
+		//GetParams := strings.Split(requestURI[1], "&")
+		//for _, paramItem := range GetParams {
+		//	params := strings.Split(paramItem, "=")
+		//	if len(params) < 2 {
+		//		continue
+		//	}
+		//	values[params[0]] = params[1]
+		//}
 	} else {
 		rq.ParseMultipartForm(2 << 32)
 		if nil != rq.MultipartForm && nil != rq.MultipartForm.Value {
@@ -291,7 +297,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		AesKey:      mAesKey,
 		Iv:          iv,
 	}
-	content, contentType := CallHandler(rq, &rw, requestName, rqObj, &serObj)
+	content, contentType := CallHandler(rq, &rw, requestName, rqObj, &serObj, acName)
 	if contentType == "" {
 		contentType = "text/json"
 	}
@@ -499,7 +505,7 @@ func uploadFile(rw http.ResponseWriter, rq *http.Request) {
 		Language:   "zh-cn",
 	}
 
-	content, contentType := CallHandler(rq, &rw, "upload", rqObj, &serObj)
+	content, contentType := CallHandler(rq, &rw, "upload", rqObj, &serObj, "UploadFile")
 	if contentType == "" {
 		contentType = "text/json"
 	}
@@ -531,6 +537,6 @@ func UAToInt(_ua string) uint32 {
 // @param _name 回调函数名称
 // @param _param 参数列表
 // @param _serconf 服务器信息
-func CallHandler(rq *http.Request, rw *http.ResponseWriter, _name string, _param *rule.HttpParam, _serconf *rule.ServerParam) (string, string) {
-	return rule.CallRule(rq, rw, _name, _param, _serconf)
+func CallHandler(rq *http.Request, rw *http.ResponseWriter, _name string, _param *rule.HttpParam, _serconf *rule.ServerParam, ac string) (string, string) {
+	return rule.CallRule(rq, rw, _name, _param, _serconf, ac)
 }
