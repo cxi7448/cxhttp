@@ -23,11 +23,16 @@ var mEnableUploadFile = false
 
 // 设置AES 密钥
 var mAesKey = ""
+var isJwt = false
 
 // 启用上传测试页面的访问
 // 访问url为 http://your_domain/upload_test
 func SetEnableUploadTest(_enable bool) {
 	mEnableUploadTest = _enable
+}
+
+func SetEnableJwt(_enable bool) {
+	isJwt = _enable
 }
 
 // 启用上传文件功能，启用后将允许前台上传文件到服务器上
@@ -294,6 +299,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		RawData:     rawData,
 		RawParam:    rqObj,     // 原始参数
 		Encrypt:     isEncrypt, // 是否加密
+		IsJwt:       isJwt,
 		AesKey:      mAesKey,
 		Iv:          iv,
 	}

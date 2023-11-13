@@ -2,7 +2,9 @@ package rule
 
 import (
 	"github.com/cxi7448/cxhttp/clResponse"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/core/clAuth"
+	"github.com/cxi7448/cxhttp/jwt"
 	"net/http"
 	"sync"
 	"time"
@@ -164,6 +166,36 @@ func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _para
 			Token:      _token,
 		})
 		return resp.ResponseText, resp.UserInfo
+	}
+
+	if _serverParam.IsJwt {
+		// 通过jwt处理登陆
+		token := _rq.Header.Get("Authorization")
+		if token == "" {
+			return clResponse.NotLogin(), nil
+		}
+		c, err := jwt.ParseToken(token)
+		if err != nil {
+			clLog.Error("解析jwt失败:%v", err)
+			return clResponse.SystemError(), nil
+		}
+		if !c.IsExpire() {
+			return clResponse.NotLogin(), nil
+		}
+
+		if !c.IsEffective() {
+			return clResponse.LogoutByKick(), nil
+		}
+
+		if c.IsReflush() {
+			token, err = c.ReflushToken() // 刷新
+			if err != nil {
+				clLog.Error("刷新token失败:%v", err)
+			} else {
+				_rq.Header.Set("Authorization", token) // 会自动输入response headers中
+			}
+		}
+		return "", c.GetUser()
 	}
 
 	var authInfo *clAuth.AuthInfo

@@ -34,6 +34,7 @@ type ServerParam struct {
 	RawData     string     // 原始数据
 	RawParam    *HttpParam // 原始的参数
 	Encrypt     bool       // 是否需要加密
+	IsJwt       bool       // 是否开启jwt
 	AesKey      string     // 加密用的key
 	Iv          string     // 加密用的iv
 	Request     *http.Request
@@ -316,6 +317,16 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 		ResponseText:   respStr,
 		ResponseWriter: rw,
 	})
+
+	if _server.IsJwt {
+		// 处理jwt的Authorization
+		authorization := rq.Header.Get("Authorization")
+		if authorization != "" {
+			_rw := *rw
+			_rw.Header().Set("Authorization", authorization)
+		}
+	}
+
 	respStr = afterResp.ResponseText
 
 	// 需要加密
