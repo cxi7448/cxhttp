@@ -41,7 +41,7 @@ type ServerParam struct {
 	Response    http.ResponseWriter
 }
 
-//@author xiaolan
+//@author cxhttp
 //@lastUpdate 2019-08-10
 //@comment 路由规则定义
 
@@ -86,7 +86,7 @@ func GetRequestAcKey(_request string) string {
 	return ackey
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 添加规则
 // @param _rule 规则结构体
@@ -97,7 +97,7 @@ func AddRule(_rule Rule) {
 	ruleList[_rule.Request+"_"+_rule.Name] = _rule
 }
 
-// @auth xiaolan
+// @auth cxhttp
 // @lastUpdate 2021-05-26
 // @comment 构建缓存key
 func BuildCacheKey(_params []string) string {
@@ -132,7 +132,7 @@ func DelApiCacheAll(_uri string, _acName string) {
 	clCache.DelCacheContains(_uri + "_" + _acName + "_")
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 调用规则
 func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *HttpParam, _server *ServerParam, ac string) (string, string) {

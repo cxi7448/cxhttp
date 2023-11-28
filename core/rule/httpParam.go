@@ -11,7 +11,7 @@ type HttpParam struct {
 	values map[string]string
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 添加一个参数到参数列表中
 // @param _key 参数的名称
@@ -31,7 +31,7 @@ func NewHttpParam(_params map[string]string) *HttpParam {
 	}
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取一个字符串型的参数
 // @param _key 要获取的参数名称
@@ -44,7 +44,7 @@ func (this *HttpParam) GetStr(_key string, _default string) string {
 	return val
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取uint32类型的参数
 // @param _key 要获取的参数名称
@@ -63,7 +63,7 @@ func (this *HttpParam) GetUint32(_key string, _default uint32) uint32 {
 	return uint32(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取uint64类型的参数
 // @param _key 要获取的参数名称
@@ -82,7 +82,7 @@ func (this *HttpParam) GetUint64(_key string, _default uint64) uint64 {
 	return uint64(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取int32类型的参数
 // @param _key 要获取的参数名称
@@ -101,7 +101,7 @@ func (this *HttpParam) GetInt32(_key string, _default int32) int32 {
 	return int32(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取int64类型的参数
 // @param _key 要获取的参数名称
@@ -120,7 +120,7 @@ func (this *HttpParam) GetInt64(_key string, _default int64) int64 {
 	return int64(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取32位浮点数
 // @param _key 要获取的参数名称
@@ -139,7 +139,7 @@ func (this *HttpParam) GetFloat32(_key string, _default float32) float32 {
 	return float32(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取64位浮点数
 // @param _key 要获取的参数名称
@@ -158,7 +158,7 @@ func (this *HttpParam) GetFloat64(_key string, _default float64) float64 {
 	return float64(i)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 获取浮点数类型
 // @param _key 要获取的参数名称
@@ -178,7 +178,7 @@ func (this *HttpParam) GetBool(_key string, _default bool) bool {
 	return false
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2022-09-15
 // @comment 将参数根据指定字符切割后返回
 // @param _key 要获得的参数名称
@@ -192,7 +192,7 @@ func (this *HttpParam) GetStrSplit(_key string, _sep string) []string {
 	return strings.Split(val, _sep)
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2022-09-15
 // @comment 获取整数列表
 // @param _key 要获得的参数名称
@@ -211,7 +211,7 @@ func (this *HttpParam) GetUint32Split(_key string) []uint32 {
 	return uint32Arr
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2022-09-15
 // @comment 获取浮点数列表
 // @param _key 要获得的参数名称
@@ -230,14 +230,14 @@ func (this *HttpParam) GetFloatSplit(_key string) []float64 {
 	return float64Arr
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2023-02-23
 // @comment 返回所有的参数
 func (this *HttpParam) ToMap() map[string]string {
 	return this.values
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2023-02-23
 // @comment 将所有参数以json字符串形式返回
 func (this *HttpParam) ToJson() string {

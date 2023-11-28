@@ -559,3 +559,19 @@ func (this *RedisObject) SetExpire(_key string, _second uint32) bool {
 	res = this.myredis.Expire(_key, time.Second*time.Duration(_second))
 	return res.Val()
 }
+
+func (this *RedisObject) Pointer() *redis.Client {
+	return this.myredis
+}
+
+func (this *RedisObject) Keys(pattern string) []string {
+	cmd := this.myredis.Keys(pattern)
+	if cmd == nil {
+		return nil
+	}
+	res, err := cmd.Result()
+	if err != nil {
+		clLog.Error("error:%v", err)
+	}
+	return res
+}

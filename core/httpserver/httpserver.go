@@ -46,7 +46,7 @@ func SetAESKey(_aesKey string) {
 	mAesKey = _aesKey
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-09
 // @comment 启动HTTP服务
 func StartServer(_listenPort uint32) {
@@ -95,7 +95,7 @@ var (
 	}
 )
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-09
 // @comment http请求主入口回调
 func rootHandler(rw http.ResponseWriter, rq *http.Request) {
@@ -521,7 +521,7 @@ func uploadFile(rw http.ResponseWriter, rq *http.Request) {
 	return
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-11
 // @comment UA转整数型
 func UAToInt(_ua string) uint32 {
@@ -537,7 +537,7 @@ func UAToInt(_ua string) uint32 {
 	}
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 调用回调函数, 成功返回文档类型(默认为text/json)和回传结果,失败返回空字符串
 // @param _name 回调函数名称

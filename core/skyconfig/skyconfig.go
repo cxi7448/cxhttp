@@ -9,32 +9,31 @@ import (
 	"time"
 )
 
-//@author xiaolan
+//@author cxhttp
 //@lastUpdate 2019-08-10
 //@comment 控制配置的读取
 //方式一。 通过文件读取
 //方式二。 通过环境变量读取
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 新建一个配置对象
-//@param _filename 配置文件名，如果文件名为空，则默认从环境变量中获取
-//@param _autoLoad 自动重载的时间（间隔多久自动重载一次), 如果为0则放弃自动重载机制
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 新建一个配置对象
+// @param _filename 配置文件名，如果文件名为空，则默认从环境变量中获取
+// @param _autoLoad 自动重载的时间（间隔多久自动重载一次), 如果为0则放弃自动重载机制
 func New(_filename string, _autoLoad time.Duration) *Config {
-	var config  = Config {
-		fileName: _filename,
-		config: make(map[string] sectionType),
-		autoLoad: _autoLoad,
-		stringMap: make(map[string] autoLoadString),
-		int64Map: make( map[/*section:key*/ string] autoLoadInt64),
-		int32Map: make( map[/*section:key*/ string] autoLoadInt32),
-		uint64Map: make( map[/*section:key*/ string] autoLoadUint64),
-		uint32Map: make( map[/*section:key*/ string] autoLoadUint32),
-		float32Map: make( map[/*section:key*/ string] autoLoadFloat32),
-		float64Map: make( map[/*section:key*/ string] autoLoadFloat64),
-		boolMap: make( map[/*section:key*/ string] autoLoadBool),
-		sectionMap: make(map[/*section*/ string] autoLoadSection),
+	var config = Config{
+		fileName:   _filename,
+		config:     make(map[string]sectionType),
+		autoLoad:   _autoLoad,
+		stringMap:  make(map[string]autoLoadString),
+		int64Map:   make(map[ /*section:key*/ string]autoLoadInt64),
+		int32Map:   make(map[ /*section:key*/ string]autoLoadInt32),
+		uint64Map:  make(map[ /*section:key*/ string]autoLoadUint64),
+		uint32Map:  make(map[ /*section:key*/ string]autoLoadUint32),
+		float32Map: make(map[ /*section:key*/ string]autoLoadFloat32),
+		float64Map: make(map[ /*section:key*/ string]autoLoadFloat64),
+		boolMap:    make(map[ /*section:key*/ string]autoLoadBool),
+		sectionMap: make(map[ /*section*/ string]autoLoadSection),
 	}
 
 	loadFile(&config)
@@ -44,13 +43,12 @@ func New(_filename string, _autoLoad time.Duration) *Config {
 	return &config
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 自动重载机制
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 自动重载机制
 func (config *Config) autoLoadConfig() {
 	for {
-		<-time.After(config.autoLoad * time.Second )
+		<-time.After(config.autoLoad * time.Second)
 		loadFile(config)
 		config.lock.Lock()
 		for _, val := range config.stringMap {
@@ -60,10 +58,9 @@ func (config *Config) autoLoadConfig() {
 	}
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 开始加载配置
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 开始加载配置
 func loadFile(config *Config) {
 	defer doWhenErr()
 
@@ -78,7 +75,7 @@ func loadFile(config *Config) {
 	}
 
 	// 将读入的文件进行换行切割
-	confArr := strings.Split(string(dat),"\n")
+	confArr := strings.Split(string(dat), "\n")
 
 	// 创建一个全局的配置小节
 	section := "global"
@@ -87,7 +84,7 @@ func loadFile(config *Config) {
 	// 是否注释
 	isHelp := false
 	// 遍历每一行,提取里面有用的数据
-	for _,v := range confArr {
+	for _, v := range confArr {
 		if len(v) < 2 {
 			continue
 		}
@@ -112,7 +109,7 @@ func loadFile(config *Config) {
 
 		if strings.HasPrefix(v, "[") && strings.HasSuffix(v, "]") {
 			// 小节
-			section = strings.TrimPrefix(strings.TrimSuffix(v,"]"),"[")
+			section = strings.TrimPrefix(strings.TrimSuffix(v, "]"), "[")
 			config.config[section] = make(sectionType)
 		} else {
 			// 配置项
@@ -125,23 +122,23 @@ func loadFile(config *Config) {
 	}
 }
 
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 错误捕获加异常处理
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 错误捕获加异常处理
 func doWhenErr() {
 	// 发生错误
 	if err := recover(); err != nil {
-		fmt.Printf("错误: %v\n",err)
+		fmt.Printf("错误: %v\n", err)
 	}
 }
 
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取string型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取string型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetStr(_section string, _key string, _def string, _value *string) bool {
 
 	var configVal = _def
@@ -163,24 +160,24 @@ func (config *Config) GetStr(_section string, _key string, _def string, _value *
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.stringMap[_section + ":" + _key] = autoLoadString{
+		config.stringMap[_section+":"+_key] = autoLoadString{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取float32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取float32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetFloat32(_section string, _key string, _def float32, _value *float32) bool {
 	var configVal = _def
 	var isExists = false
@@ -207,25 +204,24 @@ func (config *Config) GetFloat32(_section string, _key string, _def float32, _va
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.float32Map[_section + ":" + _key] = autoLoadFloat32{
+		config.float32Map[_section+":"+_key] = autoLoadFloat32{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取float64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取float64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetFloat64(_section string, _key string, _def float64, _value *float64) bool {
 	var configVal = _def
 	var isExists = false
@@ -252,25 +248,24 @@ func (config *Config) GetFloat64(_section string, _key string, _def float64, _va
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.float64Map[_section + ":" + _key] = autoLoadFloat64{
+		config.float64Map[_section+":"+_key] = autoLoadFloat64{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取int32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取int32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetInt32(_section string, _key string, _def int32, _value *int32) bool {
 	var configVal = _def
 	var isExists = false
@@ -297,25 +292,24 @@ func (config *Config) GetInt32(_section string, _key string, _def int32, _value 
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.int32Map[_section + ":" + _key] = autoLoadInt32{
+		config.int32Map[_section+":"+_key] = autoLoadInt32{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取uint32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取uint32型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetUint32(_section string, _key string, _def uint32, _value *uint32) bool {
 	var configVal = _def
 	var isExists = false
@@ -342,25 +336,24 @@ func (config *Config) GetUint32(_section string, _key string, _def uint32, _valu
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.uint32Map[_section + ":" + _key] = autoLoadUint32{
+		config.uint32Map[_section+":"+_key] = autoLoadUint32{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取int64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取int64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetInt64(_section string, _key string, _def int64, _value *int64) bool {
 	var configVal = _def
 	var isExists = false
@@ -386,27 +379,25 @@ func (config *Config) GetInt64(_section string, _key string, _def int64, _value 
 		}
 	}
 
-
 	if config.autoLoad > 0 && isExists {
-		config.int64Map[_section + ":" + _key] = autoLoadInt64{
+		config.int64Map[_section+":"+_key] = autoLoadInt64{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取uint64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取uint64型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
 func (config *Config) GetUint64(_section string, _key string, _def uint64, _value *uint64) bool {
 	var configVal = _def
 	var isExists = false
@@ -433,26 +424,25 @@ func (config *Config) GetUint64(_section string, _key string, _def uint64, _valu
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.uint64Map[_section + ":" + _key] = autoLoadUint64{
+		config.uint64Map[_section+":"+_key] = autoLoadUint64{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取bool型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
-//@param _section 区段名称
-//@param _key 配置键名
-//@param _def 默认值
-//@param _value 接收变量到指针
-func (config *Config)GetBool(_section string, _key string, _def bool, _value *bool) bool {
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取bool型的配置, 如果文件获取不到, 尝试从环境变量中获取, 如果都获取不到返回false, 否则返回true
+// @param _section 区段名称
+// @param _key 配置键名
+// @param _def 默认值
+// @param _value 接收变量到指针
+func (config *Config) GetBool(_section string, _key string, _def bool, _value *bool) bool {
 	var configVal = _def
 	var isExists = false
 	if len(config.config[_section]) > 0 {
@@ -478,29 +468,28 @@ func (config *Config)GetBool(_section string, _key string, _def bool, _value *bo
 	}
 
 	if config.autoLoad > 0 && isExists {
-		config.boolMap[_section + ":" + _key] = autoLoadBool{
+		config.boolMap[_section+":"+_key] = autoLoadBool{
 			section: _section,
-			key: _key,
-			def: _def,
-			value: _value,
+			key:     _key,
+			def:     _def,
+			value:   _value,
 		}
 	}
 	*_value = configVal
 	return isExists
 }
 
-
-//@author xiaolan
-//@lastUpdate 2019-08-10
-//@comment 获取完整的区块到map中，此方式暂不支持从环境变量中获取, 如果配置存在返回true, 否则返回false
-//@param _section 区块名称
-//@param _value 用于存放区块配置列表的变量指针
-func (config *Config)GetFullSection(_section string, _value *map[string]string) bool {
+// @author cxhttp
+// @lastUpdate 2019-08-10
+// @comment 获取完整的区块到map中，此方式暂不支持从环境变量中获取, 如果配置存在返回true, 否则返回false
+// @param _section 区块名称
+// @param _value 用于存放区块配置列表的变量指针
+func (config *Config) GetFullSection(_section string, _value *map[string]string) bool {
 	if len(config.config[_section]) > 0 {
 		if config.autoLoad > 0 {
 			config.sectionMap[_section] = autoLoadSection{
 				section: _section,
-				value: _value,
+				value:   _value,
 			}
 		}
 

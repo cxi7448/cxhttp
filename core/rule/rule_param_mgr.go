@@ -325,7 +325,7 @@ func init() {
 
 }
 
-// @author xiaolan
+// @author cxhttp
 // @lastUpdate 2019-08-04
 // @comment 验证参数合法性
 // @param _param 参数值
