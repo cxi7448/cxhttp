@@ -130,6 +130,10 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		return
 	}
 	requestName := requestArr[1]
+	paths := []string{}
+	if len(requestArr) > 3 {
+		paths = requestArr[3:]
+	}
 	acName := ""
 	if len(requestArr) > 2 {
 		acName = requestArr[2]
@@ -231,7 +235,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 			}
 		}
 	}
-	var rqObj = rule.NewHttpParam(values)
+	var rqObj = rule.NewHttpParam(values, paths)
 
 	remoteip := rq.Header.Get("X-Forwarded-For")
 	if remoteip == "" {
@@ -269,20 +273,10 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		remoteIp = remoteip
 	}
 
-	// 获取header
-	headerAuthorization := rq.Header.Get("Authorization")
-	if headerAuthorization != "" {
-		authorArr := strings.Split(headerAuthorization, ":")
-		if len(authorArr) == 2 {
-			rqObj.Add("uid", authorArr[0])
-			rqObj.Add("token", authorArr[1])
-		}
-	}
-
 	var serObj = rule.ServerParam{
 		RemoteIP:    remoteIp,
 		RequestURI:  rq.RequestURI,
-		UriData:     rule.NewHttpParam(uriValues),
+		UriData:     rule.NewHttpParam(uriValues, nil),
 		Host:        rq.Host,
 		Method:      rq.Method,
 		Header:      rq.Header,
@@ -486,17 +480,7 @@ func uploadFile(rw http.ResponseWriter, rq *http.Request) {
 		"filename":  fileName,                // 文件名
 		"fileExt":   fileExt,                 // 文件扩展名
 		"localPath": os.TempDir() + fileName, // 本地路径
-	})
-
-	// 获取header
-	headerAuthorization := rq.Header.Get("Authorization")
-	if headerAuthorization != "" {
-		authorArr := strings.Split(headerAuthorization, ":")
-		if len(authorArr) == 2 {
-			rqObj.Add("uid", authorArr[0])
-			rqObj.Add("token", authorArr[1])
-		}
-	}
+	}, nil)
 
 	var serObj = rule.ServerParam{
 		RemoteIP:   strings.Split(remoteip, ":")[0],

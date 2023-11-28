@@ -1,6 +1,7 @@
 package example
 
 import (
+	"fmt"
 	"github.com/cxi7448/cxhttp/clResponse"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/core/clAuth"
@@ -9,6 +10,9 @@ import (
 
 func ApiExample(_auth *clAuth.AuthInfo, _param *rule.HttpParam, _server *rule.ServerParam) string {
 
+	id := _param.Path().Uint32()
+	fmt.Println("id", id)
+	fmt.Println("str", _param.Path().Str())
 	//// 获取字符串列表数组
 	//strArr := _param.GetStrSplit("str_list", ",")
 	//

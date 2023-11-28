@@ -172,7 +172,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	paramsKeys = append(paramsKeys, _uri+"_"+acName)
 
 	// 检查参数
-	newParam := NewHttpParam(nil)
+	newParam := NewHttpParam(nil, nil)
 	if ruleinfo.Params != nil {
 		for _, pinfo := range ruleinfo.Params {
 			if pinfo.Name == acKey {

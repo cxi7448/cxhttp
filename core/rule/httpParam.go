@@ -9,6 +9,7 @@ import (
 
 type HttpParam struct {
 	values map[string]string
+	path   Path
 }
 
 // @author cxhttp
@@ -20,15 +21,18 @@ func (this *HttpParam) Add(_key, _val string) {
 	this.values[_key] = _val
 }
 
-func NewHttpParam(_params map[string]string) *HttpParam {
-	if _params == nil {
-		return &HttpParam{
-			values: make(map[string]string),
-		}
+func NewHttpParam(_params map[string]string, path []string) *HttpParam {
+	result := &HttpParam{
+		values: make(map[string]string),
+		path:   []string{},
 	}
-	return &HttpParam{
-		values: _params,
+	if _params != nil {
+		result.values = _params
 	}
+	if len(path) > 0 {
+		result.path = path
+	}
+	return result
 }
 
 // @author cxhttp
@@ -242,4 +246,8 @@ func (this *HttpParam) ToMap() map[string]string {
 // @comment 将所有参数以json字符串形式返回
 func (this *HttpParam) ToJson() string {
 	return clJson.CreateBy(this.values).ToStr()
+}
+
+func (this *HttpParam) Path() Path {
+	return this.path
 }

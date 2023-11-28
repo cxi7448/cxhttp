@@ -1,4 +1,4 @@
-#### 如何获取clhttp-framework?
+#### 如何获取
 
 ```
 go get github.com/cxi7448/cxhttp
