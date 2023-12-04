@@ -180,12 +180,10 @@ func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _para
 			return clResponse.SystemError(), nil
 		}
 		if !c.IsExpire() {
-			clLog.Warning("JWT过期! %+v", c)
 			return clResponse.NotLogin(), nil
 		}
 
 		if !c.IsEffective() {
-			clLog.Warning("JWT失效! %+v", c)
 			return clResponse.LogoutByKick(), nil
 		}
 
