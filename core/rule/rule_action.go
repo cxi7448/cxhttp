@@ -180,10 +180,12 @@ func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _para
 			return clResponse.SystemError(), nil
 		}
 		if !c.IsExpire() {
+			clLog.Warning("JWT过期! %+v", c)
 			return clResponse.NotLogin(), nil
 		}
 
 		if !c.IsEffective() {
+			clLog.Warning("JWT失效! %+v", c)
 			return clResponse.LogoutByKick(), nil
 		}
 
@@ -196,32 +198,32 @@ func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _para
 			}
 		}
 		return "", c.GetUser()
-	}
-
-	var authInfo *clAuth.AuthInfo
-	if _uid > 0 && _token != "" {
-		authInfo = clAuth.GetUser(_uid)
-	}
-	respStr := ""
-	if authInfo == nil || !authInfo.IsLogin {
-		// 失效了
-		respStr = clResponse.NotLogin()
-	} else if authInfo.Token != _token {
-		// 被其他人顶出, 或者是失效
-		if _sessionKey == "" {
-			if authInfo.LastUptime > uint32(time.Now().Unix())-600 {
-				respStr = clResponse.LogoutByKick()
-			} else {
-				respStr = clResponse.NotLogin()
-			}
-		} else {
-			if authInfo.SessionKey != _sessionKey {
-				respStr = clResponse.LogoutByKick()
-			} else {
-				respStr = clResponse.NotLogin()
-			}
+	} else {
+		var authInfo *clAuth.AuthInfo
+		if _uid > 0 && _token != "" {
+			authInfo = clAuth.GetUser(_uid)
 		}
+		respStr := ""
+		if authInfo == nil || !authInfo.IsLogin {
+			// 失效了
+			respStr = clResponse.NotLogin()
+		} else if authInfo.Token != _token {
+			// 被其他人顶出, 或者是失效
+			if _sessionKey == "" {
+				if authInfo.LastUptime > uint32(time.Now().Unix())-600 {
+					respStr = clResponse.LogoutByKick()
+				} else {
+					respStr = clResponse.NotLogin()
+				}
+			} else {
+				if authInfo.SessionKey != _sessionKey {
+					respStr = clResponse.LogoutByKick()
+				} else {
+					respStr = clResponse.NotLogin()
+				}
+			}
 
+		}
+		return respStr, authInfo
 	}
-	return respStr, authInfo
 }
