@@ -239,7 +239,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	// 需要登录
 	if ruleinfo.Login {
 		respStr, uInfo := DoAuthCheck(rq, acName, _server, _param, uid, token, sessionKey)
-		if uInfo == nil {
+		if uInfo == nil && respStr == "" {
 			respStr = clResponse.NotLogin()
 		}
 		if respStr != "" {
