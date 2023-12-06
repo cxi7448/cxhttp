@@ -16,11 +16,24 @@ func JCode(_code uint32, _msg string, _data interface{}) string {
 }
 
 // 成功
-func Success(data interface{}) string {
+func Success(data ...interface{}) string {
+	var _data interface{}
+	if len(data) > 0 {
+		_data = data[0]
+	}
 	resp, _ := json.Marshal(SkyResp{
 		Code: 0,
 		Msg:  "ok",
-		Data: data,
+		Data: _data,
+	})
+	return string(resp)
+}
+
+func Error(message string) string {
+	resp, _ := json.Marshal(SkyResp{
+		Code: 1,
+		Msg:  message,
+		Data: nil,
 	})
 	return string(resp)
 }
