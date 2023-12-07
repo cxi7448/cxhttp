@@ -9,6 +9,7 @@ import (
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/core/clAuth"
 	"github.com/cxi7448/cxhttp/core/clCache"
+	"github.com/cxi7448/cxhttp/jwt"
 	"github.com/cxi7448/cxhttp/src/skylang"
 	"net/http"
 	"strings"
@@ -39,6 +40,16 @@ type ServerParam struct {
 	Iv          string     // 加密用的iv
 	Request     *http.Request
 	Response    http.ResponseWriter
+}
+
+func (this *ServerParam) JwtLogin(_auth *clAuth.AuthInfo) error {
+	token, err := jwt.GenToken(_auth)
+	if err != nil {
+		clLog.Error("生成jwt失败:%v", err)
+		return err
+	}
+	this.Header.Set("Authorization", token) // 自动输入response headers中
+	return nil
 }
 
 //@author cxhttp
