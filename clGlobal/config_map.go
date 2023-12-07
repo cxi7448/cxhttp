@@ -28,13 +28,20 @@ func LoadConfig(_section, _key, _default string) string {
 }
 
 // 获取配置
-func GetConfig(_section, _key string) string {
+func GetConfig(_section, _key string, _default ...string) string {
+	__default := ""
+	if len(_default) > 0 {
+		__default = _default[0]
+	}
 	mLocker.RLock()
 	defer mLocker.RUnlock()
 
 	val, exists := mConfigMap[_section+"_"+_key]
 	if !exists {
-		return ""
+		var temp string
+		conf.GetStr(_section, _key, __default, &temp)
+		mConfigMap[_section+"_"+_key] = temp
+		return temp
 	}
 	return val
 }

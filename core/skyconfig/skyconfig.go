@@ -120,6 +120,7 @@ func loadFile(config *Config) {
 			config.config[section][strings.TrimSpace(arr[0])] = arr[1]
 		}
 	}
+	fmt.Printf("配置:%+v \n", config.config)
 }
 
 // @author cxhttp
