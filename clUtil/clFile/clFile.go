@@ -17,8 +17,6 @@ func CreateDirIFNotExists(_path string) {
 	}
 }
 
-
-
 // 删除文件
 func DelFile(_path string) {
 	err := os.RemoveAll(_path)
@@ -26,7 +24,6 @@ func DelFile(_path string) {
 		fmt.Printf("删除失败: %v", err)
 	}
 }
-
 
 // 读入文件
 func ReadFile(_filename string, _createIfNotExists bool) string {
@@ -43,7 +40,6 @@ func ReadFile(_filename string, _createIfNotExists bool) string {
 	return string(content)
 }
 
-
 // 文件追加
 func AppendFile(_filename, _content string) {
 	pFile, err := os.OpenFile(_filename, os.O_RDWR, os.ModePerm)
@@ -58,8 +54,6 @@ func AppendFile(_filename, _content string) {
 	pFile.Close()
 }
 
-
-
 // 获取文件名
 func GetFileName(_path string) string {
 	fileInfo, err := os.Stat(_path)
@@ -70,7 +64,6 @@ func GetFileName(_path string) string {
 	return fileInfo.Name()
 }
 
-
 // 获取文件名
 func GetFileSize(_path string) int64 {
 	fileInfo, err := os.Stat(_path)
@@ -80,8 +73,6 @@ func GetFileSize(_path string) int64 {
 	}
 	return fileInfo.Size()
 }
-
-
 
 // 获取文件MD5值
 func GetFileMD5(_path string) string {
@@ -97,11 +88,21 @@ func GetFileMD5(_path string) string {
 	return hex.EncodeToString(cipherStr)
 }
 
-
 // 文件是否存在
 func FileIsExists(_filePath string) bool {
-	_, err := os.Stat( _filePath )
+	_, err := os.Stat(_filePath)
 	if os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func IsFile(_filepath string) bool {
+	f, err := os.Stat(_filepath)
+	if os.IsNotExist(err) {
+		return false
+	}
+	if f.IsDir() {
 		return false
 	}
 	return true

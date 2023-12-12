@@ -44,8 +44,17 @@ func LoadFromFile(_filename string, _overWrite bool) error {
 
 		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
 			section = strings.TrimPrefix(strings.TrimSuffix(line, "]"), "[")
-			mConfig[section] = clSuperMap.NewSuperMap()
-			aConfig[section] = make([]string, 0)
+			if _overWrite {
+				mConfig[section] = clSuperMap.NewSuperMap()
+				aConfig[section] = make([]string, 0)
+			} else {
+				if _, ok := mConfig[section]; !ok {
+					mConfig[section] = clSuperMap.NewSuperMap()
+				}
+				if _, ok := aConfig[section]; !ok {
+					aConfig[section] = make([]string, 0)
+				}
+			}
 			continue
 		}
 
@@ -55,7 +64,7 @@ func LoadFromFile(_filename string, _overWrite bool) error {
 			aConfig[section] = append(aConfig[section], line)
 			continue
 		}
-		clLog.Info("section: %v key: %v, val: %v", section, line[:idx], line[idx+1:])
+		//clLog.Info("section: %v key: %v, val: %v", section, line[:idx], line[idx+1:])
 		mConfig[section].Add(line[:idx], line[idx+1:])
 	}
 	return nil
@@ -234,4 +243,11 @@ func GetMap(_key string) map[string]string {
 		return map[string]string{}
 	}
 	return configItem.GetMap()
+}
+
+func Println() {
+	for key, val := range mConfig {
+		clLog.Info("key:%+v  val:%+v", key, val.GetMap())
+	}
+	clLog.Info("arr:%+v", aConfig)
 }

@@ -6,10 +6,10 @@ import (
 	"crypto/cipher"
 	"errors"
 	"fmt"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"math/rand"
 	"time"
 )
-
 
 // 生成16位随机字符串
 func RandomBlock(_len int) []byte {
@@ -23,8 +23,6 @@ func RandomBlock(_len int) []byte {
 	return result
 }
 
-
-
 func pkcs7Unpadding(b []byte, blocksize int) ([]byte, error) {
 	if blocksize <= 0 {
 		return nil, errors.New("尺寸非法")
@@ -32,7 +30,6 @@ func pkcs7Unpadding(b []byte, blocksize int) ([]byte, error) {
 	if b == nil || len(b) == 0 {
 		return nil, errors.New("尺寸非法")
 	}
-
 
 	if len(b)%blocksize != 0 {
 		return nil, errors.New("尺寸非法")
@@ -50,7 +47,6 @@ func pkcs7Unpadding(b []byte, blocksize int) ([]byte, error) {
 	return b[:len(b)-n], nil
 }
 
-
 func pkcs7Padding(ciphertext []byte, blockSize int) ([]byte, error) {
 
 	if blockSize <= 0 {
@@ -60,23 +56,20 @@ func pkcs7Padding(ciphertext []byte, blockSize int) ([]byte, error) {
 		return nil, errors.New("尺寸非法")
 	}
 
-	padding := blockSize - len(ciphertext) % blockSize
+	padding := blockSize - len(ciphertext)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(ciphertext, padtext...), nil
 }
-
-
 
 // AES解密数据
 func AesCBCDecode(_buffer []byte, _key []byte, _iv []byte) string {
 
 	_buffer = bytes.ReplaceAll(_buffer, []byte(" "), []byte("+"))
 
-	dData := Base64Decode( string(_buffer) )
+	dData := Base64Decode(string(_buffer))
 	bufferResp := make([]byte, 0)
 
-
-	_cipher, err := aes.NewCipher( _key )
+	_cipher, err := aes.NewCipher(_key)
 	if err != nil {
 		return ""
 	}
@@ -94,8 +87,6 @@ func AesCBCDecode(_buffer []byte, _key []byte, _iv []byte) string {
 
 	return string(bufferResp)
 }
-
-
 
 // AES加密数据
 func AesCBCEncode(_buffer string, _key string, iv string) string {
@@ -119,29 +110,47 @@ func AesCBCEncode(_buffer string, _key string, iv string) string {
 	return Base64Encode(origData)
 }
 
-
 func Aes256GCMDecode(_aesKey string, _ciphertext string, _nonce string, _associatedData string) string {
-		// The key argument should be the AES key, either 16 or 32 bytes
-		// to select AES-128 or AES-256.
-		key := []byte(_aesKey)
-		ciphertext := Base64Decode(_ciphertext)
+	// The key argument should be the AES key, either 16 or 32 bytes
+	// to select AES-128 or AES-256.
+	key := []byte(_aesKey)
+	ciphertext := Base64Decode(_ciphertext)
 
-		nonce := []byte(_nonce)
+	nonce := []byte(_nonce)
 
-		block, err := aes.NewCipher(key)
-		if err != nil {
-			panic(err.Error())
-		}
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		aesgcm, err := cipher.NewGCM(block)
-		if err != nil {
-			panic(err.Error())
-		}
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		plaintext, err := aesgcm.Open(nil, nonce, ciphertext, []byte(_associatedData))
-		if err != nil {
-			panic(err.Error())
-		}
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, []byte(_associatedData))
+	if err != nil {
+		panic(err.Error())
+	}
 
-		return string(plaintext)
+	return string(plaintext)
+}
+
+func AesCFBEncrypt(originData []byte, key, iv []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		clLog.Error("aes读取key失败:%v", err)
+		return nil, err
+	}
+	encryted := make([]byte, len(originData))
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(encryted, originData)
+	return encryted, nil
+}
+
+func AesCFBDecrypt(encrypted []byte, key, iv []byte) ([]byte, error) {
+	block, _ := aes.NewCipher(key)
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(encrypted, encrypted)
+	return encrypted, nil
 }
