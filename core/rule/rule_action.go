@@ -155,7 +155,10 @@ func DoRequestAfter(_request string, _param *RequestAfterParam) *RequestAfterRet
 	return _callback(_param)
 }
 
-func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _param *HttpParam, _uid uint64, _token, _sessionKey string) (string, *clAuth.AuthInfo) {
+func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _param *HttpParam) (string, *clAuth.AuthInfo) {
+	_token := _param.GetStr("token", "")
+	_uid := _param.GetUint64("uid", 0)
+	_sessionKey := _param.GetStr("session_key", "")
 	if globalActionAuthCheck != nil {
 		resp := globalActionAuthCheck(&AuthCheckParam{
 			Request:    _rq,

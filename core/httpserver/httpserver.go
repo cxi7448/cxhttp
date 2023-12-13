@@ -391,8 +391,13 @@ func mysqlConfEncrypt(rw http.ResponseWriter, rq *http.Request) {
 func uploadFile(rw http.ResponseWriter, rq *http.Request) {
 
 	// 跨域支持
-	rw.Header().Set("Access-Control-Allow-Origin", "*")  //允许访问所有域
-	rw.Header().Add("Access-Control-Allow-Headers", "*") //header的类型
+	for _, row := range accessContrlAllowPools {
+		if row.Type == "SET" {
+			rw.Header().Set(row.Key, row.Value) //允许访问所有域
+		} else {
+			rw.Header().Add(row.Key, row.Value) //允许访问所有域
+		}
+	}
 
 	if strings.ToUpper(rq.Method) == "OPTIONS" {
 		rw.WriteHeader(200)
@@ -493,6 +498,7 @@ func uploadFile(rw http.ResponseWriter, rq *http.Request) {
 		UAType:     UAToInt(myUA),
 		Proctol:    proctol,
 		Language:   "zh-cn",
+		IsJwt:      isJwt,
 	}
 
 	content, contentType := CallHandler(rq, &rw, "upload", rqObj, &serObj, "UploadFile")

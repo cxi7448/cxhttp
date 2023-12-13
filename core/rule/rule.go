@@ -160,7 +160,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	ruleinfo, exists := ruleList[_uri+"_"+acName]
 	if !exists {
 		if clGlobal.SkyConf.DebugRouter {
-			clLog.Error("AC <%v_%v> 不存在! IP: %v", _uri, acName, _server.RemoteIP)
+			clLog.Error("AC <%v_%v_%v> 不存在! IP: %v", _uri, acName, ac, _server.RemoteIP)
 			clLog.Debug("%+v", ruleList)
 		}
 		respStr := clResponse.JCode(skylang.MSG_ERR_FAILED_INT, "模块不存在!", nil)
@@ -175,9 +175,6 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	}
 
 	var authInfo *clAuth.AuthInfo
-	var token = _param.GetStr("token", "")
-	var uid = _param.GetUint64("uid", 0)
-	var sessionKey = _param.GetStr("session_key", "")
 
 	paramsKeys := make([]string, 0)
 	paramsKeys = append(paramsKeys, _uri+"_"+acName)
@@ -249,7 +246,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 
 	// 需要登录
 	if ruleinfo.Login {
-		respStr, uInfo := DoAuthCheck(rq, acName, _server, _param, uid, token, sessionKey)
+		respStr, uInfo := DoAuthCheck(rq, acName, _server, _param)
 		if uInfo == nil && respStr == "" {
 			respStr = clResponse.NotLogin()
 		}
