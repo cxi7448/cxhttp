@@ -13,6 +13,14 @@ import (
 type M map[string]interface{}
 type A []interface{}
 
+func (this *M)Get(key string)string {
+	res,ok := (*this)[key]
+	if ok {
+		return fmt.Sprint(res)
+	}
+	return ""
+}
+
 // 创建一个新对象
 // {"":""}
 func New(bs []byte) *JsonStream {
