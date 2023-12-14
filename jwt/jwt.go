@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-const (
-	TokenExpireDuration  = 3600 * 6
-	TokenReflushDuration = 3600 * 1
+var (
+	TokenExpireDuration  = int64(3600)
+	TokenReflushDuration = int64(3600)
 )
 
 var SecretKey = []byte("32honefzr7vnbm0k")
@@ -34,7 +34,7 @@ type Claims struct {
 
 func (this Claims) SaveToRedis() {
 	redis := clGlobal.GetRedis()
-	err := redis.Set(fmt.Sprintf("%v%v", JWT_PREFIX, this.UserInfo.Uid), this.UserInfo, TokenExpireDuration)
+	err := redis.Set(fmt.Sprintf("%v%v", JWT_PREFIX, this.UserInfo.Uid), this.UserInfo, int32(TokenExpireDuration))
 	if err != nil {
 		clLog.Error("存入redis失败:%v", err)
 	}

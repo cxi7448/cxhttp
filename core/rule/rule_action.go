@@ -180,7 +180,7 @@ func DoAuthCheck(_rq *http.Request, _ac string, _serverParam *ServerParam, _para
 		c, err := jwt.ParseToken(token)
 		if err != nil {
 			clLog.Error("解析jwt失败:%v", err)
-			return clResponse.SystemError(), nil
+			return clResponse.NotLogin(), nil
 		}
 		if !c.IsExpire() {
 			return clResponse.NotLogin(), nil
