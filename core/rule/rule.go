@@ -12,6 +12,7 @@ import (
 	"github.com/cxi7448/cxhttp/jwt"
 	"github.com/cxi7448/cxhttp/src/skylang"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -104,7 +105,13 @@ func GetRequestAcKey(_request string) string {
 func AddRule(_rule Rule) {
 	ruleLocker.Lock()
 	defer ruleLocker.Unlock()
-
+	// 检测是否重复
+	for _, rule := range ruleList {
+		if rule.Request == _rule.Request && rule.Name == _rule.Name {
+			clLog.Error("路由[%v_%v]重复注册", _rule.Request, _rule.Name)
+			os.Exit(1)
+		}
+	}
 	ruleList[_rule.Request+"_"+_rule.Name] = _rule
 }
 

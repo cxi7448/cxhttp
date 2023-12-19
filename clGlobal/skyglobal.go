@@ -114,7 +114,6 @@ func Init(_filename string) {
 			DBName: MysqlName,
 		}
 	}
-
 	if SkyConf.DebugRouter {
 		clLog.Debug("%+v", SkyConf)
 	}

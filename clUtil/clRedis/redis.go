@@ -90,6 +90,12 @@ func (this *RedisObject) Del(key string) error {
 	return i.Err()
 }
 
+// 删除
+func (this *RedisObject) DelNoPrefix(key string) error {
+	i := this.myredis.Del(key)
+	return i.Err()
+}
+
 // 设置
 func (this *RedisObject) Set(key string, val interface{}, expire int32) error {
 
