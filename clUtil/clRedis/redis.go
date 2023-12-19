@@ -15,6 +15,7 @@ import (
 type RedisObject struct {
 	myredis   *redis.Client
 	prefix    string
+	noPrefix  bool
 	isCluster bool
 }
 
@@ -82,7 +83,7 @@ func (this *RedisObject) Ping() bool {
 func (this *RedisObject) Del(key string) error {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -100,7 +101,7 @@ func (this *RedisObject) DelNoPrefix(key string) error {
 func (this *RedisObject) Set(key string, val interface{}, expire int32) error {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	err := this.myredis.Set(keys, buildRedisValue(keys, uint32(expire), val),
@@ -112,7 +113,7 @@ func (this *RedisObject) Set(key string, val interface{}, expire int32) error {
 func (this *RedisObject) Get(key string) string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.Get(keys)
@@ -126,7 +127,7 @@ func (this *RedisObject) Get(key string) string {
 // 获取最原始的数据
 func (this *RedisObject) GetRaw(key string) string {
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.Get(keys)
@@ -140,7 +141,7 @@ func (this *RedisObject) GetRaw(key string) string {
 func (this *RedisObject) GetLang(key string) string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.Get(keys)
@@ -163,7 +164,7 @@ func (this *RedisObject) GetNoPrefix(key string) string {
 func (this *RedisObject) GetJson(key string) *clJson.JsonStream {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	obj := this.myredis.Get(keys)
@@ -174,7 +175,7 @@ func (this *RedisObject) GetJson(key string) *clJson.JsonStream {
 func (this *RedisObject) HSet(key string, field string, value interface{}, expire uint32) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	value = buildRedisValue(keys+field, expire, value)
@@ -194,7 +195,7 @@ func (this *RedisObject) HSet(key string, field string, value interface{}, expir
 func (this *RedisObject) SetEx(key string, value interface{}, expire uint32) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	value = buildRedisValue(keys, expire, value)
@@ -209,7 +210,7 @@ func (this *RedisObject) SetEx(key string, value interface{}, expire uint32) boo
 func (this *RedisObject) HSetJson(key string, field string, value interface{}, expire uint32) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	value = buildRedisValue(keys+field, expire, value)
@@ -226,7 +227,7 @@ func (this *RedisObject) HSetJson(key string, field string, value interface{}, e
 func (this *RedisObject) HGet(key string, field string) string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.HGet(keys, field)
@@ -240,7 +241,7 @@ func (this *RedisObject) HGet(key string, field string) string {
 func (this *RedisObject) HDel(key string, field string) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.HDel(keys, field)
@@ -251,7 +252,7 @@ func (this *RedisObject) HDel(key string, field string) bool {
 func (this *RedisObject) HGetJson(key string, field string) *clJson.JsonStream {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	val := this.myredis.HGet(keys, field)
@@ -266,7 +267,7 @@ func (this *RedisObject) HGetJson(key string, field string) *clJson.JsonStream {
 func (this *RedisObject) HGetKeys(key string, prefix string) []string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -287,7 +288,7 @@ func (this *RedisObject) HGetKeys(key string, prefix string) []string {
 func (this *RedisObject) HDelKeys(key string, prefix string) {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	keylist := this.HGetKeys(keys, prefix)
@@ -300,7 +301,7 @@ func (this *RedisObject) HDelKeys(key string, prefix string) {
 func (this *RedisObject) HGetAll(key string) map[string]string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -312,7 +313,7 @@ func (this *RedisObject) HGetAll(key string) map[string]string {
 func (this *RedisObject) SetNx(key string, value interface{}, expire uint32) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	value = buildRedisValue(keys, expire, value)
@@ -417,7 +418,7 @@ func buildRedisValue(keys string, expire uint32, data interface{}) string {
 func (this *RedisObject) Lpush(key string, expire uint32, values ...interface{}) bool {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 	for k, value := range values {
@@ -440,7 +441,7 @@ func (this *RedisObject) Lpush(key string, expire uint32, values ...interface{})
 func (this *RedisObject) Lpop(key string) string {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -455,7 +456,7 @@ func (this *RedisObject) Lpop(key string) string {
 func (this *RedisObject) LPOPWait(key string, _timeOut uint32) (error, []string) {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -487,7 +488,7 @@ func (this *RedisObject) LPOPWait(key string, _timeOut uint32) (error, []string)
 // 取队列元素个数
 func (this *RedisObject) Llen(key string) (error, int64) {
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -499,7 +500,7 @@ func (this *RedisObject) Llen(key string) (error, int64) {
 func (this *RedisObject) Rpop(key string) interface{} {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -512,7 +513,7 @@ func (this *RedisObject) Rpop(key string) interface{} {
 func (this *RedisObject) DelList(key string) {
 
 	keys := key
-	if this.prefix != "" {
+	if this.prefix != "" && !this.noPrefix {
 		keys = this.prefix + "_" + key
 	}
 
@@ -580,4 +581,9 @@ func (this *RedisObject) Keys(pattern string) []string {
 		clLog.Error("error:%v", err)
 	}
 	return res
+}
+
+func (this *RedisObject) NoPrefix() *RedisObject {
+	this.noPrefix = true
+	return this
 }
