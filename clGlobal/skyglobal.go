@@ -122,6 +122,7 @@ func Init(_filename string) {
 // 获取redis连线
 func GetRedis() *clRedis.RedisObject {
 	if mRedis != nil && mRedis.Ping() {
+		mRedis.NoPrefix(false)
 		return mRedis
 	}
 	newRedis, err := clRedis.New(SkyConf.RedisHost, SkyConf.RedisPass, SkyConf.RedisPrefix)
@@ -130,7 +131,7 @@ func GetRedis() *clRedis.RedisObject {
 		return nil
 	}
 	mRedis = newRedis
-	return mRedis
+	return mRedis.NoPrefix(false)
 }
 
 // 获取mysql连线

@@ -583,7 +583,7 @@ func (this *RedisObject) Keys(pattern string) []string {
 	return res
 }
 
-func (this *RedisObject) NoPrefix() *RedisObject {
-	this.noPrefix = true
+func (this *RedisObject) NoPrefix(noprefix bool) *RedisObject {
+	this.noPrefix = noprefix
 	return this
 }
