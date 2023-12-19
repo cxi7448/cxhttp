@@ -559,6 +559,11 @@ func (this *RedisObject) Increment(key string, _val int64) int64 {
 	return res.Val()
 }
 
+func (this *RedisObject) HInc(key, field string, incr int64) int64 {
+	cmd := this.myredis.HIncrBy(key, field, incr)
+	return cmd.Val()
+}
+
 // 添加一个值
 func (this *RedisObject) SetExpire(_key string, _second uint32) bool {
 	var res *redis.BoolCmd
