@@ -2,13 +2,15 @@ package xwork
 
 import (
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
+	"github.com/cxi7448/cxhttp/clUtil/processbar"
 	"sync"
 )
 
 type XWork struct {
-	Num    int
-	locker sync.RWMutex
-	Queue  []XQueue // 队列
+	Num     int
+	locker  sync.RWMutex
+	Queue   []XQueue // 队列
+	process *processbar.ProcessBar
 }
 type XQueue struct {
 	Param    clJson.M
@@ -54,6 +56,9 @@ func (this *XWork) doWork() {
 					break
 				}
 				queue.Callback(queue.Param)
+				if this.process != nil {
+					this.process.Add()
+				}
 			}
 			ch <- "success"
 		}(ch)
@@ -63,6 +68,7 @@ func (this *XWork) doWork() {
 	}
 }
 func (this *XWork) Wait() {
+	this.process = processbar.New(float32(len(this.Queue)))
 	this.doWork()
 }
 
