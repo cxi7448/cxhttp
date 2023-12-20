@@ -99,7 +99,7 @@ func FileIsExists(_filePath string) bool {
 
 func IsFile(_filepath string) bool {
 	f, err := os.Stat(_filepath)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || f == nil {
 		return false
 	}
 	if f.IsDir() {
