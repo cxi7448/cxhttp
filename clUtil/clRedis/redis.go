@@ -17,6 +17,7 @@ type RedisObject struct {
 	prefix    string
 	noPrefix  bool
 	isCluster bool
+	isOrigin  bool // 原生输出结果
 }
 
 var RedisPool map[string]*RedisObject
@@ -117,6 +118,9 @@ func (this *RedisObject) Get(key string) string {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.Get(keys)
+	if this.isOrigin {
+		return resp.Val()
+	}
 	result := checkRedisValid(keys, resp)
 	if result == "" {
 		this.myredis.Del(keys)
@@ -231,11 +235,21 @@ func (this *RedisObject) HGet(key string, field string) string {
 		keys = this.prefix + "_" + key
 	}
 	resp := this.myredis.HGet(keys, field)
+	if this.isOrigin {
+		return resp.Val()
+	}
 	result := checkRedisValid(keys+field, resp)
 	if result == "" {
 		this.myredis.HDel(keys, field)
 	}
 	return result
+}
+
+func (this *RedisObject) Origin() *RedisObject {
+	var _redis = RedisObject{}
+	_redis = *this
+	_redis.isOrigin = true
+	return &_redis
 }
 
 func (this *RedisObject) HDel(key string, field string) bool {
@@ -276,10 +290,14 @@ func (this *RedisObject) HGetKeys(key string, prefix string) []string {
 		return []string{}
 	}
 	resp := make([]string, 0)
-	for _, val := range val.Val() {
-		if strings.HasPrefix(val, prefix) {
-			resp = append(resp, val)
+	if prefix != "" {
+		for _, row := range val.Val() {
+			if strings.HasPrefix(row, prefix) {
+				resp = append(resp, row)
+			}
 		}
+	} else {
+		resp = val.Val()
 	}
 	return resp
 }
