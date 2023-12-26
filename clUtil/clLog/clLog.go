@@ -137,7 +137,7 @@ func print(_type uint32, _fmt string, _args ...interface{}) {
 	}
 
 	if logMode == LogModeConsole {
-		fmt.Printf("\x1b[0;%dm%v\x1b[0m\n", color, logContent+" "+content)
+		fmt.Printf("\x1b[0;%dm%v\x1b[0m\r\n", color, logContent+" "+content)
 		return
 	}
 	fmt.Println(logContent + " " + content)

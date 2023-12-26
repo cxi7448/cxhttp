@@ -276,7 +276,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 			// 根据IP缓存
 			paramsKeys = append(paramsKeys, "ip="+_server.RemoteIP)
 		}
-		cacheKey = _uri + "_" + acName + "_" + BuildCacheKey(paramsKeys)
+		cacheKey = rq.RequestURI + "_" + acName + "_" + BuildCacheKey(paramsKeys)
 		if _server.Encrypt { // 如果是加密的话，需要带上Iv
 			cacheKey += _server.Iv
 		}
@@ -294,7 +294,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 			// 根据IP缓存
 			paramsKeys = append(paramsKeys, "ip="+_server.RemoteIP)
 		}
-		cacheKey = _uri + "_" + acName + "_" + BuildCacheKey(paramsKeys) + "_NX"
+		cacheKey = rq.RequestURI + "_" + acName + "_" + BuildCacheKey(paramsKeys) + "_NX"
 		if _server.Encrypt { // 如果是加密的话，需要带上Iv
 			cacheKey += _server.Iv
 		}
