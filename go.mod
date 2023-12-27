@@ -9,6 +9,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/minio/minio-go v6.0.14+incompatible
+	github.com/speps/go-hashids/v2 v2.0.1
 )
 
 require (
