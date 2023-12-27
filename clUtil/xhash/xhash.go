@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	salt     = "ewqewqdsacxz"
+	salt     = "jnfdbasgoew"
 	alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM123456789"
 	minLen   = 6
 )
