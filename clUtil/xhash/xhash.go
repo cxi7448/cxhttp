@@ -5,10 +5,16 @@ import (
 )
 
 var (
-	salt     = "salt"
-	alphabet = "qwertyuiopasdfghjklzxcvbnm"
+	salt     = "ewqewqdsacxz"
+	alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM123456789"
 	minLen   = 6
 )
+
+func Init(_salt, _alphabet string, _minLen int) {
+	salt = _salt
+	alphabet = _alphabet
+	minLen = _minLen
+}
 
 // 解析user_id
 func Decode(str string) uint64 {
