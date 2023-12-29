@@ -28,18 +28,18 @@ func New() *FFmpeg {
 	}
 	var paths []string
 	var filename string
-	// 扫描当前目录是否存在执行文件
-	pwd, _ := os.Getwd()
-	ffmpeg_cmd := fmt.Sprintf("%v/%v", pwd, filename)
-	if clFile.IsFile(ffmpeg_cmd) {
-		ffmpeg.Cmd(ffmpeg_cmd)
-	}
 	if runtime.GOOS == "window" {
 		paths = strings.Split(os.Getenv("PATH"), ";")
 		filename = "ffmpeg.exe"
 	} else {
 		filename = "ffmpeg"
 		paths = strings.Split(os.Getenv("PATH"), ":")
+	}
+	// 扫描当前目录是否存在执行文件
+	pwd, _ := os.Getwd()
+	ffmpeg_cmd := fmt.Sprintf("%v/%v", pwd, filename)
+	if clFile.IsFile(ffmpeg_cmd) {
+		ffmpeg.Cmd(ffmpeg_cmd)
 	}
 	if len(paths) > 0 {
 		// 环境变量优先级最高
