@@ -256,7 +256,6 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 	if proctol == "" {
 		proctol = rq.Proto
 	}
-	fmt.Printf("rq:%+v \n", rq)
 	request_url = prefix + "://" + rq.Host + rq.RequestURI
 
 	myUA := rq.Header.Get("Platform")
