@@ -248,12 +248,17 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		remoteip = remotes[0]
 	}
 	request_url := ""
+	var prefix = "http"
 	proctol := rq.Header.Get("Proxy-X-Forwarded-Proto")
 	if proctol == "" {
 		proctol = rq.Header.Get("X-Forwarded-Proto")
 	}
-
-	request_url = "https://" + rq.Host + rq.RequestURI
+	if proctol == "" {
+		proctol = rq.Proto
+	}
+	fmt.Println("proctol:", proctol)
+	fmt.Println("proctol2:", rq.Proto)
+	request_url = prefix + "://" + rq.Host + rq.RequestURI
 
 	myUA := rq.Header.Get("Platform")
 	if myUA == "" {
