@@ -53,6 +53,20 @@ func (this *ServerParam) JwtLogin(_auth *clAuth.AuthInfo) error {
 	return nil
 }
 
+// 重定向
+func (this *ServerParam) Location(url string) {
+	this.Response.Header().Set("Location", url)
+	this.Response.WriteHeader(http.StatusFound)
+}
+
+func (this *ServerParam) IsAndroid() bool {
+	return this.UAType == 2
+}
+
+func (this *ServerParam) IsIos() bool {
+	return this.UAType == 3
+}
+
 //@author cxhttp
 //@lastUpdate 2019-08-10
 //@comment 路由规则定义
