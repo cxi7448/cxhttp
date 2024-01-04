@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"math/rand"
 	"net"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -221,4 +222,32 @@ func GenUserPassword(_username string, _password string, _case bool) string {
 		str = strings.ToUpper(str)
 	}
 	return Md5([]byte(str))
+}
+
+func InArray(value interface{}, array interface{}) bool {
+	valueOf := reflect.ValueOf(array)
+	var new_array = []interface{}{}
+	for i := 0; i < valueOf.Len(); i++ {
+		new_array = append(new_array, valueOf.Index(i).Interface())
+	}
+	for _, val := range new_array {
+		if val == value {
+			return true
+		}
+	}
+	return false
+}
+
+func InArrayUnSafe(value interface{}, array interface{}) bool {
+	valueOf := reflect.ValueOf(array)
+	var new_array = []interface{}{}
+	for i := 0; i < valueOf.Len(); i++ {
+		new_array = append(new_array, valueOf.Index(i).Interface())
+	}
+	for _, val := range new_array {
+		if fmt.Sprint(val) == fmt.Sprint(value) {
+			return true
+		}
+	}
+	return false
 }
