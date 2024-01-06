@@ -26,6 +26,7 @@ type SqlBuider struct {
 	fieldStr   string
 	updateData map[string]string
 	orders     string
+	random     *int // 随机因子
 	limit      string
 	group      string
 	having     string
@@ -198,6 +199,17 @@ func (this *SqlBuider) Group(groupStr string) *SqlBuider {
 */
 func (this *SqlBuider) Order(orders string) *SqlBuider {
 	this.orders = orders
+	return this
+}
+
+/*
+*
+
+	设置排序方式
+	@param orders string 排序内容
+*/
+func (this *SqlBuider) OrderRand(random int) *SqlBuider {
+	this.random = &random
 	return this
 }
 
@@ -1133,8 +1145,17 @@ func (this *SqlBuider) buildQuerySql() (string, error) {
 		}
 	}
 
-	if this.orders != "" {
-		extraSql += " ORDER BY " + this.orders
+	if this.orders != "" || this.random != nil {
+		extraSql += " ORDER BY "
+		if this.orders != "" {
+			extraSql += this.orders
+		}
+		if this.random != nil {
+			if this.orders != "" {
+				extraSql += ","
+			}
+			extraSql += fmt.Sprintf(" rand(%v) ", *this.random)
+		}
 	}
 
 	if this.limit != "" {
