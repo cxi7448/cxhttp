@@ -211,7 +211,11 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 			if value == PARAM_CHECK_FAIED || value == "" {
 				if pinfo.Static {
 					// 严格模式
-					return clResponse.JCode(skylang.MSG_ERR_FAILED_INT, "参数:"+pinfo.Name+"不合法!", pinfo.Name), ruleinfo.RespContent
+					var msg = "参数:" + pinfo.Name + "不合法!"
+					if pinfo.Tips != "" {
+						msg = pinfo.Tips
+					}
+					return clResponse.Error(msg), ruleinfo.RespContent
 				} else {
 					value = pinfo.Default
 				}
@@ -219,7 +223,11 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 				if !pinfo.CheckParam(value) {
 					if pinfo.Static {
 						// 严格模式
-						return clResponse.JCode(skylang.MSG_ERR_FAILED_INT, "参数:"+pinfo.Name+"不合法!", pinfo.Name), ruleinfo.RespContent
+						var msg = "参数:" + pinfo.Name + "不合法!"
+						if pinfo.Tips != "" {
+							msg = pinfo.Tips
+						}
+						return clResponse.Error(msg), ruleinfo.RespContent
 					} else {
 						value = pinfo.Default
 					}

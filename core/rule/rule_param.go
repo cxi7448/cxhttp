@@ -8,6 +8,7 @@ type ParamInfo struct {
 	Static    bool     // 是否严格检查，如果为true, 参数检测失败后拒绝处理这个请求，否则使用默认值继续处理
 	Default   string   // 如果参数检测不通过则使用这个默认值进行处理
 	Extra     []string // 扩展参数
+	Tips      string   // 提示语句
 }
 
 // @author cxhttp
