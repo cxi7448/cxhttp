@@ -217,7 +217,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 					}
 					return clResponse.Error(msg), ruleinfo.RespContent
 				} else {
-					value = pinfo.Default
+					value = pinfo.Def()
 				}
 			} else {
 				if !pinfo.CheckParam(value) {
@@ -229,7 +229,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 						}
 						return clResponse.Error(msg), ruleinfo.RespContent
 					} else {
-						value = pinfo.Default
+						value = pinfo.Def()
 					}
 				}
 			}
