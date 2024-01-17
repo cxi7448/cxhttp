@@ -36,6 +36,7 @@ const (
 	PTYPE_V2          = 22 // 2维坐标系
 	PTYPE_V3          = 23 // 3维坐标系
 	PTYPE_V4          = 24 // 4维坐标系
+	PTYPE_BOOL        = 25 // boolean
 )
 
 const (
@@ -320,6 +321,15 @@ func init() {
 			}
 		}
 
+		return _param
+	}
+
+	// 长度范围内的字符串
+	paramCheckers[PTYPE_BOOL] = func(_param string, _extra *ParamInfo) string {
+		match, err := regexp.Match(`^(true|false)$`, []byte(_param))
+		if err != nil || !match {
+			return PARAM_CHECK_FAIED
+		}
 		return _param
 	}
 
