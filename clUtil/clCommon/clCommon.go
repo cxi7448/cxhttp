@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"math/rand"
 	"net"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -253,4 +254,20 @@ func UnderlineToUppercase(_firstIsUpper bool, _val string) string {
 		}
 	}
 	return newVal.String()
+}
+
+func ConvertToCamelCase(str string) string {
+	// 去除空格并将所有单词首字母大写
+	reg, _ := regexp.Compile(`[\s|_]`)
+	words := reg.Split(strings.TrimSpace(str), -1)
+	//words := strings.Split(strings.TrimSpace(str), " ")
+	for i := range words {
+		if len(words[i]) > 0 {
+			words[i] = strings.Title(words[i])
+		}
+	}
+	// 移除多余的连接符（如果存在）
+	result := strings.Join(words, "")
+	re := regexp.MustCompile("[-_]+") // 正则表达式匹配连接符
+	return re.ReplaceAllString(result, "")
 }
