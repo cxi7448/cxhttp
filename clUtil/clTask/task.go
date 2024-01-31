@@ -51,9 +51,10 @@ func NewTaskByWeek(tag string, name string, callback func(), delay uint32, start
 		Lasttime:   0,
 		Week:       week,
 	}
-
-	if !run {
-		task.Lasttime = uint32(time.Now().Unix())
+	task.Lasttime = uint32(time.Now().Unix())
+	if run {
+		// 启动执行任务
+		callback()
 	}
 
 	return &task

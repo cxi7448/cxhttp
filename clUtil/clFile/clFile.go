@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 )
 
@@ -106,4 +107,27 @@ func IsFile(_filepath string) bool {
 		return false
 	}
 	return true
+}
+
+func Download(link, localPath string) error {
+	res, err := http.Get(link)
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(localPath)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	io.Copy(f, res.Body)
+	return nil
+}
+
+func Copy(filePath, newPath string) error {
+	input, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(newPath, input, 0644)
+	return err
 }

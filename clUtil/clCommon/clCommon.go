@@ -1,12 +1,17 @@
 package clCommon
 
 import (
+	"bufio"
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"math/big"
 	"math/rand"
 	"net"
+	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -270,4 +275,48 @@ func ConvertToCamelCase(str string) string {
 	result := strings.Join(words, "")
 	re := regexp.MustCompile("[-_]+") // 正则表达式匹配连接符
 	return re.ReplaceAllString(result, "")
+}
+
+func RunCommandNoConsole(name string, args ...string) (string, error) {
+	fmt.Println("执行命令:", name, args)
+	cmd := exec.Command(name, args...)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = os.Stderr
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("执行命令失败2:", err)
+		return "", err
+	}
+	err = cmd.Wait()
+	return out.String(), err
+}
+func RunCommand(name string, args ...string) error {
+	fmt.Println("执行命令:", name, args)
+	cmd := exec.Command(name, args...)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Println("执行命令失败1:", err)
+		return err
+	}
+	cmd.Stderr = os.Stderr
+	err = cmd.Start()
+	if err != nil {
+		fmt.Println("执行命令失败2:", err)
+		return err
+	}
+	reader := bufio.NewReader(stdout)
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+		fmt.Println(line)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Println("执行命令失败3:", err)
+		return err
+	}
+	return nil
 }
