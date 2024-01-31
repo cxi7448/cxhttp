@@ -314,6 +314,11 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		rw.Header().Set("Encrypt-Type", "AES")
 		rw.Header().Set("Encrypt-iv", iv)
 	}
+	if contentType == "302" {
+		rw.Header().Set("Location", content)
+		rw.WriteHeader(http.StatusFound)
+		return
+	}
 	rw.Header().Set("Content-Type", contentType)
 	rw.Header().Set("Charset", "UTF-8")
 	rw.Write([]byte(content))
