@@ -594,6 +594,17 @@ func (this *RedisObject) Pointer() *redis.Client {
 	return this.myredis
 }
 
+func (this *RedisObject) LIndex(key string, index int64) string {
+	keys := key
+	if this.prefix != "" && !this.noPrefix {
+		keys = this.prefix + "_" + key
+	}
+
+	val := this.myredis.LIndex(keys, index)
+	result := checkRedisValid(keys, val)
+	return result
+}
+
 func (this *RedisObject) Keys(pattern string) []string {
 	cmd := this.myredis.Keys(pattern)
 	if cmd == nil {
