@@ -5,6 +5,7 @@ import (
 	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"io/ioutil"
+	"strings"
 )
 
 var (
@@ -92,4 +93,20 @@ func UploadFile(filepath, objectName string) error {
 func UploadContent(content []byte, objectName string) error {
 	s3 := NewImage()
 	return s3.UploadContent(content, objectName, 3)
+}
+
+func DecodeImage(encodePath string) (string, error) {
+	xiegang := strings.LastIndex(encodePath, "/")
+	decodePath := fmt.Sprintf("%v/decode_%v", encodePath[0:xiegang], encodePath[xiegang+1:])
+	_content, err := ioutil.ReadFile(encodePath)
+	if err != nil {
+		clLog.Error("文件[%v]打开失败:%v", encodePath, err)
+		return "", err
+	}
+	decodeContent, err := clCrypt.AesCFBDecrypt(_content, AES_KEY, AES_IV)
+	if err != nil {
+		return "", err
+	}
+	err = ioutil.WriteFile(decodePath, decodeContent, 0700)
+	return decodePath, err
 }

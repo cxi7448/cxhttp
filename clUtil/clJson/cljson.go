@@ -13,12 +13,28 @@ import (
 type M map[string]interface{}
 type A []interface{}
 
-func (this *M)Get(key string)string {
-	res,ok := (*this)[key]
+func (this *M) Get(key string) string {
+	res, ok := (*this)[key]
 	if ok {
 		return fmt.Sprint(res)
 	}
 	return ""
+}
+
+func (this *M) Uint32(key string) uint32 {
+	val := this.Get(key)
+	return parseUint32(val)
+}
+
+// @author cxhttp
+// @lastUpdate 2019-08-04
+// @comment 字符串转uint32
+func parseUint32(ceil string) uint32 {
+	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 10, 32)
+	if err == nil {
+		return uint32(ib)
+	}
+	return uint32(0)
 }
 
 // 创建一个新对象

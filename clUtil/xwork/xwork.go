@@ -72,6 +72,10 @@ func (this *XWork) Wait() {
 	this.doWork()
 }
 
+func (this *XWork) WaitNoProcess() {
+	this.doWork()
+}
+
 func (this *XWork) Run() {
 	go this.doWork()
 }
