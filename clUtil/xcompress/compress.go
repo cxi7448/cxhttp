@@ -200,36 +200,3 @@ func compressPNG(f io.Reader, width uint, height uint) (string, error) {
 	}
 	return filepath, err
 }
-
-func JpgToPng(localPath string) (string, error) {
-	// 打开原始JPG图片文件
-	srcFile, err := os.Open(localPath)
-	if err != nil {
-		clLog.Error("读取JPG失败:%v", err)
-		return "", err
-	}
-	defer srcFile.Close()
-	// 读取JPG图片数据并创建Image对象
-	img, _, err := image.Decode(srcFile)
-	if err != nil {
-		clLog.Error("读取JPG失败:%v", err)
-		return "", err
-	}
-
-	// 设置目标PNG图片路径及名称
-	var outputPath = fmt.Sprintf("%v%v.png", ROOT_DIR, time.Now().UnixNano())
-	// 保存为PNG格式
-	dstFile, err := os.Create(outputPath)
-	if err != nil {
-		clLog.Error("创建PNG失败:%v", err)
-		return "", err
-	}
-	defer dstFile.Close()
-
-	err = png.Encode(dstFile, img)
-	if err != nil {
-		clLog.Error("无法保存为PNG格式:%v", err)
-		return "", err
-	}
-	return outputPath, nil
-}
