@@ -118,3 +118,21 @@ func TooQuickly() string {
 	})
 	return string(resp)
 }
+
+func Download(title string, csv []byte) string {
+	resp, _ := json.Marshal(SkyResp{
+		Code: 0,
+		Msg:  "",
+		Data: clJson.M{
+			"title":   title,
+			"content": csv,
+		},
+	})
+	return string(resp)
+}
+
+func ParseDownload(resp string) SkyRespDownload {
+	result := SkyRespDownload{}
+	json.Unmarshal([]byte(resp), &result)
+	return result
+}

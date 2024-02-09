@@ -3,6 +3,7 @@ package httpserver
 import (
 	"fmt"
 	"github.com/cxi7448/cxhttp/clCommon"
+	"github.com/cxi7448/cxhttp/clResponse"
 	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
@@ -317,6 +318,12 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 	if contentType == "302" {
 		rw.Header().Set("Location", content)
 		rw.WriteHeader(http.StatusFound)
+		return
+	} else if contentType == "download" {
+		resp := clResponse.ParseDownload(content)
+		rw.Header().Set("ContentType", "application/octet-stream")
+		rw.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%v", resp.Data.Title))
+		rw.Write(resp.Data.Content)
 		return
 	}
 	rw.Header().Set("Content-Type", contentType)
