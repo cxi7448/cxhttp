@@ -1,3 +1,5 @@
 vendor
 go.sum
 *_test.go
+tmp
+*.jpg
