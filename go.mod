@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/speps/go-hashids/v2 v2.0.1
+	golang.org/x/image v0.15.0
 )
 
 require (
@@ -21,7 +22,7 @@ require (
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 // indirect
 )
