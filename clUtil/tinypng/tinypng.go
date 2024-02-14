@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/cxi7448/cxhttp/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clFile"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"io/ioutil"
@@ -26,8 +27,10 @@ var (
 )
 
 type Tinypng struct {
-	Input  Input  `json:"input"`
-	Output Output `json:"output"`
+	Error   string `json:"error"`
+	Message string `json:"message"`
+	Input   Input  `json:"input"`
+	Output  Output `json:"output"`
 }
 
 type Output struct {
@@ -57,24 +60,34 @@ func Init(email, apikey string) {
 	EMAIL = email
 	APIKEY = apikey
 }
+
 func Compress(image_path string) (string, error) {
-	ext := image_path[strings.LastIndex(image_path, "."):]
-	new_path := fmt.Sprintf("%v%v%v_compress%v", ROOT_DIR, COMPRESS_DIR, time.Now().UnixNano(), ext)
-	// 创建Request
-	req, err := http.NewRequest(http.MethodPost, CompressingUrl, nil)
-	if err != nil {
-		clLog.Error("错误:%v", err)
-		return "", err
-	}
-	// 将鉴权信息写入Request
-	req.SetBasicAuth(EMAIL, APIKEY)
+	//if try_times <= 0 {
+	//	return "", fmt.Errorf("tinypng找不到合适的账号压缩,请稍后再试!")
+	//}
 	// 将图片以二进制的形式写入Request
 	data, err := ioutil.ReadFile(image_path)
 	if err != nil {
 		clLog.Error("错误:%v", err)
 		return "", err
 	}
+
+	ext := image_path[strings.LastIndex(image_path, "."):]
+	new_path := fmt.Sprintf("%v%v%v_%v_compress%v", ROOT_DIR, COMPRESS_DIR, time.Now().UnixNano(), clCommon.Md5([]byte(image_path)), ext)
+	// 创建Request
+	req, err := http.NewRequest(http.MethodPost, CompressingUrl, nil)
+	if err != nil {
+		clLog.Error("错误:%v", err)
+		return "", err
+	}
 	req.Body = ioutil.NopCloser(bytes.NewReader(data))
+switchAccount:
+	info := GetOne()
+	if info == nil {
+		return "", fmt.Errorf("tinypng找不到合适的账号压缩,请稍后再试!!")
+	}
+	// 将鉴权信息写入Request
+	req.SetBasicAuth(info.Email, info.Apikey)
 	// 发起请求
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -94,6 +107,10 @@ func Compress(image_path string) (string, error) {
 		fmt.Println(string(data))
 		clLog.Error("解析Tinypng的返回失败:%v", err)
 		return "", err
+	}
+	if result.Error != "" {
+		// 错误信息 异步处理报错的信息
+		goto switchAccount
 	}
 	if result.Output.Url == "" {
 		fmt.Println(string(data))

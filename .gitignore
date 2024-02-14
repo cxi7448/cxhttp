@@ -4,3 +4,4 @@ go.sum
 tmp
 *.jpg
 *.png
+*.dat
