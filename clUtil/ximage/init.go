@@ -13,7 +13,7 @@ var command_cwebp = ""
 var command_gif2webp = ""
 
 const (
-	host   = "https://github.com/cxi7448/cxhttp/raw/feb9e451e9c812d98b80e42c1b016a9c70358164"
+	host   = "https://github.com/cxi7448/cxhttp/raw/v1.0.6"
 	folder = "bin"
 )
 
