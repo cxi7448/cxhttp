@@ -85,6 +85,8 @@ func LoadFile(filePath string) {
 }
 
 func GetOne() *Account {
+	locker.RLock()
+	defer locker.RUnlock()
 	month := clCommon.Uint32(clTime.GetDateByFormat(uint32(time.Now().Unix()), "01"))
 	for _, row := range accountPools {
 		if row.Month == month && row.Times == -1 {

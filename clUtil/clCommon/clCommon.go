@@ -278,7 +278,7 @@ func ConvertToCamelCase(str string) string {
 }
 
 func RunCommandNoConsole(name string, args ...string) (string, error) {
-	fmt.Println("执行命令:", name, args)
+	//fmt.Println("执行命令:", name, args)
 	cmd := exec.Command(name, args...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -292,7 +292,7 @@ func RunCommandNoConsole(name string, args ...string) (string, error) {
 	return out.String(), err
 }
 func RunCommand(name string, args ...string) error {
-	fmt.Println("执行命令:", name, args)
+	//fmt.Println("执行命令:", name, args)
 	cmd := exec.Command(name, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

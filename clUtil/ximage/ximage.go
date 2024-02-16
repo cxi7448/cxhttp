@@ -2,6 +2,7 @@ package ximage
 
 import (
 	"fmt"
+	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"golang.org/x/image/webp"
 	"image"
@@ -9,8 +10,10 @@ import (
 	_ "image/jpeg"
 	"image/png"
 	_ "image/png"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -20,6 +23,51 @@ const (
 
 func init() {
 	os.MkdirAll(ROOT_DIR, 0777)
+}
+
+const perSize = 1000 // 1kb
+
+// 设置最大字节，超过最大字节的话，使用min_quality压缩 默认quality压缩
+// max_size 单位: KB
+// max_size 单位: KB
+func ImageToWebpByMaxSize(input string, max_size float64, quality, min_quality int) (string, error) {
+	path, err := ImageToWebp(input, quality)
+	if err != nil {
+		clLog.Error("压缩图片失败:%v", err)
+		return "", err
+	}
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		clLog.Error("读取压缩后的图片失败：%v", err)
+		return "", err
+	}
+	if float64(len(content)) >= max_size {
+		defer os.RemoveAll(path)
+		new_path, err := ImageToWebp(path, min_quality)
+		if err != nil {
+			clLog.Error("压缩图片失败:%v", err)
+			return "", err
+		}
+		return new_path, nil
+	}
+	return path, nil
+}
+
+func ImageToWebp(input string, quality int) (string, error) {
+	ext := input[strings.LastIndex(input, "."):]
+	var output = fmt.Sprintf("%v%v_%v%v", ROOT_DIR, time.Now().UnixNano(), clCommon.Md5([]byte(input)), ext)
+	imageType, err := GetImageType(input)
+	if err != nil {
+		clLog.Error("读取图片类型失败:%v", err)
+		return "", err
+	}
+	if imageType == "image/gif" {
+		_, err = clCommon.RunCommandNoConsole("./gif2webp", input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
+		return output, err
+	}
+
+	_, err = clCommon.RunCommandNoConsole("./cwebp", input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
+	return output, err
 }
 
 func ImageToPng(localPath string) (string, error) {
