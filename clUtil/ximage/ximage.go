@@ -62,11 +62,11 @@ func ImageToWebp(input string, quality int) (string, error) {
 		return "", err
 	}
 	if imageType == "image/gif" {
-		_, err = clCommon.RunCommandNoConsole("./gif2webp", input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
+		_, err = clCommon.RunCommandNoConsole(command_gif2webp, input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
 		return output, err
 	}
 
-	_, err = clCommon.RunCommandNoConsole("./cwebp", input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
+	_, err = clCommon.RunCommandNoConsole(command_cwebp, input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
 	return output, err
 }
 

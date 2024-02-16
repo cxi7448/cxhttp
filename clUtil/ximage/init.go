@@ -3,9 +3,9 @@ package ximage
 import (
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clFile"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"os"
 	"runtime"
-	"strings"
 )
 
 var command = ""
@@ -13,48 +13,54 @@ var command_cwebp = ""
 var command_gif2webp = ""
 
 const (
-	bin_root = "./bin"
+	host   = "https://github.com/cxi7448/cxhttp/raw/feb9e451e9c812d98b80e42c1b016a9c70358164"
+	folder = "bin"
 )
 
 func init() {
+	pwd, _ := os.Getwd()
 	// 自动生成执行文件
-	var paths = []string{}
 	var filename_cwebp = ""
 	var filename_gif2webp = ""
-	fmt.Println(runtime.GOOS)
+	bin_root := fmt.Sprintf("%v/%v", pwd, folder)
+	os.MkdirAll(bin_root, 0700)
+	server := "linux"
 	if runtime.GOOS == "window" {
-		paths = strings.Split(os.Getenv("PATH"), ";")
 		filename_cwebp = "cwebp.exe"
 		filename_gif2webp = "gif2webp.exe"
+		server = "window"
 	} else {
+		if runtime.GOOS == "darwin" {
+			server = "mac"
+		}
 		filename_cwebp = "cwebp"
 		filename_gif2webp = "gif2webp"
-		paths = strings.Split(os.Getenv("PATH"), ":")
 	}
-	// 扫描当前目录是否存在执行文件
-	//pwd, _ := os.Getwd()
-	//command_cwebp = fmt.Sprintf("%v/%v", pwd, filename_cwebp)
-	//command_gif2webp = fmt.Sprintf("%v/%v", pwd, filename_gif2webp)
-	if len(paths) > 0 {
-		// 环境变量优先级最高
-		for _, path := range paths {
-			cwebp_cmd := fmt.Sprintf("%v/%v", path, filename_cwebp)
-			if clFile.IsFile(cwebp_cmd) {
-				command_cwebp = cwebp_cmd
-			}
-
-			gif2webp_cmd := fmt.Sprintf("%v/%v", path, filename_gif2webp)
-			if clFile.IsFile(gif2webp_cmd) {
-				command_gif2webp = gif2webp_cmd
-			}
+	cwebp_cmd := fmt.Sprintf("%v/%v", bin_root, filename_cwebp)
+	gif2webp_cmd := fmt.Sprintf("%v/%v", bin_root, filename_gif2webp)
+	if clFile.IsFile(cwebp_cmd) {
+		command_cwebp = cwebp_cmd
+	} else {
+		link := fmt.Sprintf("%v/clUtil/ximage/%v/%v", host, server, filename_cwebp)
+		err := clFile.Download(link, cwebp_cmd)
+		if err != nil {
+			clLog.Error("cwebp[%v]-[%v]-[%v]下载失败:%v", link, server, runtime.GOOS, err)
+		} else {
+			command_cwebp = fmt.Sprintf("%v/%v", bin_root, filename_cwebp)
+			os.Chmod(command_cwebp, 0755)
 		}
 	}
-	if command_cwebp == "" {
-		// 自动下载补齐 cwebp
-		link := fmt.Sprintf("")
-		clFile.Download(link, fmt.Sprintf("%vcwebp", bin_root))
-	}
-	if command_gif2webp == "" {
+	if clFile.IsFile(gif2webp_cmd) {
+		command_gif2webp = gif2webp_cmd
+	} else {
 		// 自动下载补齐 gif2webp
+		link := fmt.Sprintf("%v/clUtil/ximage/%v/%v", host, server, filename_gif2webp)
+		err := clFile.Download(link, gif2webp_cmd)
+		if err != nil {
+			clLog.Error("cwebp[%v]-[%v]-[%v]下载失败:%v", link, server, runtime.GOOS, err)
+		} else {
+			command_gif2webp = fmt.Sprintf("%v/%v", bin_root, filename_gif2webp)
+			os.Chmod(command_gif2webp, 0755)
+		}
 	}
 }

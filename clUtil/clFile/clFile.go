@@ -119,8 +119,8 @@ func Download(link, localPath string) error {
 		return err
 	}
 	defer res.Body.Close()
-	io.Copy(f, res.Body)
-	return nil
+	_, err = io.Copy(f, res.Body)
+	return err
 }
 
 func Copy(filePath, newPath string) error {
