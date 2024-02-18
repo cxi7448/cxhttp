@@ -2,6 +2,7 @@ package clResponse
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 )
 
@@ -29,10 +30,10 @@ func Success(data ...interface{}) string {
 	return string(resp)
 }
 
-func Error(message string) string {
+func Error(message string, args ...interface{}) string {
 	resp, _ := json.Marshal(SkyResp{
 		Code: 1,
-		Msg:  message,
+		Msg:  fmt.Sprintf(message, args...),
 		Data: nil,
 	})
 	return string(resp)
