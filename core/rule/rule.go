@@ -171,11 +171,11 @@ func DelApiCacheAll(_uri string, _acName string) {
 func GetRuleInfo(_uri, ac string) *Rule {
 	ruleLocker.RLock()
 	defer ruleLocker.RUnlock()
-	info, ok := ruleList[_uri]
+	info, ok := ruleList[_uri+"_"+ac]
 	if ok {
 		return &info
 	}
-	info, ok = ruleList[_uri+"_"+ac]
+	info, ok = ruleList[_uri]
 	if ok {
 		return &info
 	}
@@ -213,7 +213,6 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	}
 
 	var authInfo *clAuth.AuthInfo
-
 	paramsKeys := make([]string, 0)
 	paramsKeys = append(paramsKeys, _uri+"_"+acName)
 
