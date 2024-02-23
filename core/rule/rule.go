@@ -126,7 +126,11 @@ func AddRule(_rule Rule) {
 			os.Exit(1)
 		}
 	}
-	ruleList[_rule.Request+"_"+_rule.Name] = _rule
+	if _rule.Name == "" {
+		ruleList[_rule.Request] = _rule
+	} else {
+		ruleList[_rule.Request+"_"+_rule.Name] = _rule
+	}
 }
 
 // @auth cxhttp
@@ -164,12 +168,24 @@ func DelApiCacheAll(_uri string, _acName string) {
 	clCache.DelCacheContains(_uri + "_" + _acName + "_")
 }
 
+func GetRuleInfo(_uri, ac string) *Rule {
+	ruleLocker.RLock()
+	defer ruleLocker.RUnlock()
+	info, ok := ruleList[_uri]
+	if ok {
+		return &info
+	}
+	info, ok = ruleList[_uri+"_"+ac]
+	if ok {
+		return &info
+	}
+	return nil
+}
+
 // @author cxhttp
 // @lastUpdate 2019-08-10
 // @comment 调用规则
 func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *HttpParam, _server *ServerParam, ac string) (string, string) {
-	ruleLocker.RLock()
-	defer ruleLocker.RUnlock()
 	var acKey = GetRequestAcKey(_uri)
 	// 通过AC获取到指定的路由
 	var acName string
@@ -178,8 +194,9 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 	} else {
 		acName = _param.GetStr(acKey, "")
 	}
-	ruleinfo, exists := ruleList[_uri+"_"+acName]
-	if !exists {
+	//ruleinfo, exists := ruleList[_uri+"_"+acName]
+	ruleinfo := GetRuleInfo(_uri, acName)
+	if ruleinfo == nil {
 		if clGlobal.SkyConf.DebugRouter {
 			clLog.Error("AC <%v_%v_%v> 不存在! IP: %v", _uri, acName, ac, _server.RemoteIP)
 			clLog.Debug("%+v", ruleList)

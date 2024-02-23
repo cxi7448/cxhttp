@@ -63,4 +63,5 @@ func init() {
 			os.Chmod(command_gif2webp, 0755)
 		}
 	}
+	clLog.Info("ximage初始化完毕！")
 }
