@@ -137,3 +137,22 @@ func ParseDownload(resp string) SkyRespDownload {
 	json.Unmarshal([]byte(resp), &result)
 	return result
 }
+
+// 列表
+func List(list interface{}, total int32, extra ...clJson.M) string {
+	data := clJson.M{
+		"list":  list,
+		"total": total,
+	}
+	if len(extra) > 0 {
+		for key, val := range extra[0] {
+			data[key] = val
+		}
+	}
+	resp, _ := json.Marshal(SkyResp{
+		Code: 0,
+		Msg:  "ok",
+		Data: data,
+	})
+	return string(resp)
+}
