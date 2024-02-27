@@ -4,10 +4,13 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"github.com/cheggaaa/pb/v3"
+	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 // 创建文件夹如果不存在
@@ -130,4 +133,36 @@ func Copy(filePath, newPath string) error {
 	}
 	err = ioutil.WriteFile(newPath, input, 0644)
 	return err
+}
+
+func DownloadProcess(link, localPath string) error {
+	tmpFile := localPath + ".tmp"
+	target, err := os.Create(tmpFile)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodGet, link, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	fileSize := clCommon.Int64(resp.Header.Get("Content-Length"))
+	bar := pb.Full.Start64(fileSize)
+	bar.SetWidth(120)                         //设置进度条宽度
+	bar.SetRefreshRate(10 * time.Millisecond) //设置刷新速率
+	defer bar.Finish()
+	barReader := bar.NewProxyReader(resp.Body)
+	if _, err := io.Copy(target, barReader); err != nil {
+		target.Close()
+		return err
+	}
+	target.Close()
+	if err := os.Rename(tmpFile, localPath); err != nil {
+		return err
+	}
+	return nil
 }

@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.1+incompatible
+	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/farmerx/gorsa v0.0.0-20161211100049-3ae06f674f40
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -14,10 +15,16 @@ require (
 )
 
 require (
+	github.com/VividCortex/ewma v1.2.0 // indirect
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.29.0 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
