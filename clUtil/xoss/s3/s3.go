@@ -150,6 +150,19 @@ func (this *S3) GetContent(objectName string, _tryCount int) ([]byte, error) {
 	return content, nil
 }
 
+func (this *S3) Download(objectName, localPath string, _tryCount int) error {
+	if this.Client == nil {
+		return fmt.Errorf("存储桶实例失败!")
+	}
+	err := this.Client.FGetObject(this.Bucket, objectName, localPath, minio.GetObjectOptions{})
+	if err != nil {
+		if _tryCount > 0 {
+			return this.Download(objectName, localPath, _tryCount-1)
+		}
+	}
+	return err
+}
+
 // s3对象
 func (this *S3) C() *minio.Client {
 	return this.Client

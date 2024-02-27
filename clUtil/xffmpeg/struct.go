@@ -83,10 +83,10 @@ func (this *FFmpeg) Run() ([]byte, error) {
 	if this.output != "" {
 		args = append(args, this.output)
 	}
-	return this.runCommand(args...)
+	return this.RunCommand(args...)
 }
 
-func (this *FFmpeg) runCommand(args ...string) ([]byte, error) {
+func (this *FFmpeg) RunCommand(args ...string) ([]byte, error) {
 	var out []byte
 	var err error
 	clLog.Info("执行命令:%v", fmt.Sprintf("%v %v", this.cmd, strings.Join(args, " ")))
