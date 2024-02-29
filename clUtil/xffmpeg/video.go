@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clCommon"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"math"
 	"regexp"
 	"strings"
@@ -124,12 +125,16 @@ func (this *FFmpeg) GetVideoInfo() *VideoInfo {
 		name = filepath
 	}
 	out, _ := this.Run()
-	if len(out) == 0 || !(bytes.Contains(out, []byte("Duration:")) && bytes.Contains(out, []byte("Stream")) && bytes.Contains(out, []byte("Video:"))) {
+	if len(out) == 0 || !(bytes.Contains(out, []byte("Duration:")) && bytes.Contains(out, []byte("Stream"))) {
+		clLog.Error("没有视频信息?")
+		fmt.Println(string(out))
+		// && bytes.Contains(out, []byte("Video:")))
 		return nil
 	}
 	video := VideoInfo{
 		Filepath: filepath,
 		Name:     name,
+		FB:       &FB{},
 	}
 	for _, line := range bytes.Split(out, []byte("\n")) {
 		row := bytes.TrimSpace(line)

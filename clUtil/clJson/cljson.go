@@ -21,6 +21,14 @@ func (this *M) Get(key string) string {
 	return ""
 }
 
+func (this *M) Interface(key string) interface{} {
+	res, ok := (*this)[key]
+	if ok {
+		return res
+	}
+	return nil
+}
+
 func (this *M) Uint32(key string) uint32 {
 	val := this.Get(key)
 	return parseUint32(val)

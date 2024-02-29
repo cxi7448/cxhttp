@@ -15,7 +15,7 @@ func DownloadFFMPEG() {
 	if clFile.IsFile(file) {
 		return
 	}
-	err := clFile.Download(downloadUrl, file)
+	err := clFile.DownloadProcess(downloadUrl, file)
 	if err != nil {
 		clLog.Error("下载ffmpeg错误:%v", err)
 	} else {

@@ -2,6 +2,7 @@ package clGlobal
 
 import (
 	"errors"
+	"github.com/cxi7448/cxhttp/clUtil/clConfig"
 	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/clUtil/clMysql"
@@ -54,7 +55,7 @@ var mMysqlList []*clMysql.DBPointer
 var conf *skyconfig.Config
 
 func Init(_filename string) {
-
+	clConfig.LoadFromFile(_filename, true)
 	conf = skyconfig.New(_filename, 0)
 
 	//conf.GetStr("mongodb", "mgo_url", "", &SkyConf.MgoUrl)
