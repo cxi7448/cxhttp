@@ -27,6 +27,29 @@ func init() {
 
 const perSize = 1000 // 1kb
 
+func ImageAdaptionToSize(input string, max_size float64, _quality, _min_quality int) (string, error) {
+	newPath, err := ImageToWebp(input, _quality)
+	if err != nil {
+		clLog.Error("图片压缩失败：%v", err)
+		return "", err
+	}
+	if _quality <= _min_quality {
+		return newPath, nil
+	}
+	content, err := ioutil.ReadFile(newPath)
+	if err != nil {
+		clLog.Error("错误:%v", err)
+		return "", err
+	}
+	size := float64(len(content)) / 1000
+	//clLog.Info("压缩比:%v - %v", _quality, len(content)/1000)
+	if size <= max_size {
+		return newPath, nil
+	}
+	os.RemoveAll(newPath)
+	return ImageAdaptionToSize(input, max_size, _quality-10, _min_quality)
+}
+
 // 设置最大字节，超过最大字节的话，使用min_quality压缩 默认quality压缩
 // max_size 单位: KB
 // max_size 单位: KB
