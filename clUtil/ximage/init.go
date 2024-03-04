@@ -25,7 +25,7 @@ func init() {
 	bin_root := fmt.Sprintf("%v/%v", pwd, folder)
 	os.MkdirAll(bin_root, 0700)
 	server := "linux"
-	if runtime.GOOS == "window" {
+	if runtime.GOOS == "windows" {
 		filename_cwebp = "cwebp.exe"
 		filename_gif2webp = "gif2webp.exe"
 		server = "window"
