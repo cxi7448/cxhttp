@@ -178,7 +178,6 @@ func IsPng(localPath string) bool {
 	if err != nil {
 		return false
 	}
-	fmt.Println(fileType)
 	return fileType == "image/png"
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/cxi7448/cxhttp/clResponse"
 	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/xre"
 	"github.com/cxi7448/cxhttp/core/clAuth"
 	"github.com/cxi7448/cxhttp/core/clCache"
 	"github.com/cxi7448/cxhttp/jwt"
@@ -60,11 +61,11 @@ func (this *ServerParam) Location(url string) {
 }
 
 func (this *ServerParam) IsAndroid() bool {
-	return this.UAType == 2
+	return xre.IsAndroid(this.Header.Get("User-Agent"))
 }
 
 func (this *ServerParam) IsIos() bool {
-	return this.UAType == 3
+	return xre.IsIOS(this.Header.Get("User-Agent"))
 }
 
 //@author cxhttp

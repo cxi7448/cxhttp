@@ -173,6 +173,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		var jsonStr = jsonBytes[:n]
 		if isEncrypt {
 			jsonStr = []byte(clCrypt.AesCBCDecode(jsonStr, []byte(mAesKey), []byte(iv)))
+			clLog.Debug("请求body: %+v", string(jsonStr))
 		}
 		if jsonStr == nil || len(jsonStr) == 0 {
 			clLog.Error("数据: %v 结构化失败! 加密:%v 长度:%v", string(jsonStr), isEncrypt, n)

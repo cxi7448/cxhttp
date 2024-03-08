@@ -2,6 +2,7 @@ package xre
 
 import (
 	"regexp"
+	"strings"
 )
 
 func IsTinyInt(str string) bool {
@@ -92,4 +93,12 @@ func IsNickname(_nickname string) bool {
 		return false
 	}
 	return true
+}
+
+func IsIOS(userAgent string) bool {
+	return strings.Contains(strings.ToLower(userAgent), "iphone")
+}
+
+func IsAndroid(userAgent string) bool {
+	return strings.Contains(strings.ToLower(userAgent), "android")
 }
