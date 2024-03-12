@@ -320,3 +320,21 @@ func RunCommand(name string, args ...string) error {
 	}
 	return nil
 }
+
+func ParseSize(size float64) string {
+	const per_size = 1000
+	var dw = "B"
+	if size > per_size {
+		size = size / per_size
+		dw = "K"
+	}
+	if size > per_size {
+		size = size / per_size
+		dw = "M"
+	}
+	if size > per_size {
+		size = size / per_size
+		dw = "G"
+	}
+	return fmt.Sprintf("%0.2f%v", size, dw)
+}

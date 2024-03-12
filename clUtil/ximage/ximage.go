@@ -84,6 +84,9 @@ func ImageToWebp(input string, quality int) (string, error) {
 		clLog.Error("读取图片类型失败:%v", err)
 		return "", err
 	}
+	if imageType == "image/webp" {
+		return input, nil
+	}
 	if imageType == "image/gif" {
 		_, err = clCommon.RunCommandNoConsole(command_gif2webp, input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
 		return output, err
