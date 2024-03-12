@@ -2,7 +2,6 @@ package ximage
 
 import (
 	"fmt"
-	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"golang.org/x/image/webp"
 	"image"
@@ -11,9 +10,7 @@ import (
 	"image/png"
 	_ "image/png"
 	"io/ioutil"
-	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -26,29 +23,6 @@ func init() {
 }
 
 const perSize = 1000 // 1kb
-
-func ImageAdaptionToSize(input string, max_size float64, _quality, _min_quality int) (string, error) {
-	newPath, err := ImageToWebp(input, _quality)
-	if err != nil {
-		clLog.Error("图片压缩失败：%v", err)
-		return "", err
-	}
-	if _quality <= _min_quality {
-		return newPath, nil
-	}
-	content, err := ioutil.ReadFile(newPath)
-	if err != nil {
-		clLog.Error("错误:%v", err)
-		return "", err
-	}
-	size := float64(len(content)) / 1000
-	//clLog.Info("压缩比:%v - %v", _quality, len(content)/1000)
-	if size <= max_size {
-		return newPath, nil
-	}
-	os.RemoveAll(newPath)
-	return ImageAdaptionToSize(input, max_size, _quality-10, _min_quality)
-}
 
 // 设置最大字节，超过最大字节的话，使用min_quality压缩 默认quality压缩
 // max_size 单位: KB
@@ -77,23 +51,40 @@ func ImageToWebpByMaxSize(input string, max_size float64, quality, min_quality i
 }
 
 func ImageToWebp(input string, quality int) (string, error) {
-	ext := input[strings.LastIndex(input, "."):]
-	var output = fmt.Sprintf("%v%v_%v%v", ROOT_DIR, time.Now().UnixNano(), clCommon.Md5([]byte(input)), ext)
-	imageType, err := GetImageType(input)
+	info := New(input)
+	err := info.ImageToWebp(quality)
 	if err != nil {
-		clLog.Error("读取图片类型失败:%v", err)
-		return "", err
+		clLog.Error("错误:%v", err)
 	}
-	if imageType == "image/webp" {
-		return input, nil
-	}
-	if imageType == "image/gif" {
-		_, err = clCommon.RunCommandNoConsole(command_gif2webp, input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
-		return output, err
-	}
+	return info.Output, info.Err
+}
 
-	_, err = clCommon.RunCommandNoConsole(command_cwebp, input, "-quiet", "-q", fmt.Sprint(quality), "-o", output)
-	return output, err
+func ImageAdaptionToSize(input string, max_size float64, _quality, _min_quality int) (string, error) {
+	info := ImageToWebpV2(input, _quality)
+	if info.IsError() {
+		clLog.Error("图片压缩失败：%v", info.Err)
+		return "", info.Err
+	}
+	if info.IsWebp() {
+		return info.Output, nil
+	}
+	if _quality <= _min_quality {
+		return info.Output, nil
+	}
+	size := float64(len(info.Buffer)) / 1000
+	if size <= max_size {
+		return info.Output, nil
+	}
+	os.RemoveAll(info.Output)
+	return ImageAdaptionToSize(input, max_size, _quality-10, _min_quality)
+}
+func ImageToWebpV2(input string, quality int) *Ximage {
+	xi := New(input)
+	err := xi.ImageToWebp(quality)
+	if err != nil {
+		clLog.Error("转换错误:%v", err)
+	}
+	return xi
 }
 
 func ImageToPng(localPath string) (string, error) {
@@ -185,15 +176,18 @@ func IsPng(localPath string) bool {
 }
 
 func GetImageType(file string) (string, error) {
-	f, err := os.Open(file)
-	header := make([]byte, 512)
-	var f2 = &os.File{}
-	f2 = f
-	_, err = f2.Read(header)
-	if err != nil {
-		clLog.Error("读取文件[%v]头失败:%v", file, err)
-		return "", err
-	}
-	filetype := http.DetectContentType(header)
-	return filetype, nil
+	//f, err := os.Open(file)
+	//header := make([]byte, 512)
+	//var f2 = &os.File{}
+	//f2 = f
+	//_, err = f2.Read(header)
+	//if err != nil {
+	//	clLog.Error("读取文件[%v]头失败:%v", file, err)
+	//	return "", err
+	//}
+	//filetype := http.DetectContentType(header)
+	//defer f.Close()
+	//defer f2.Close()
+	info := New(file)
+	return info.GetImageType(), nil
 }
