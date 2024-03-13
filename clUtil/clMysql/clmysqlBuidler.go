@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clSuperMap"
+	"github.com/cxi7448/cxhttp/clUtil/clTime"
 	"reflect"
 	"strings"
 )
@@ -210,6 +211,19 @@ func (this *SqlBuider) Order(orders string) *SqlBuider {
 */
 func (this *SqlBuider) OrderRand(random int) *SqlBuider {
 	this.random = &random
+	return this
+}
+
+/*
+*
+
+	设置排序方式
+	@param orders string 排序内容
+*/
+func (this *SqlBuider) OrderRandHour() *SqlBuider {
+	ct, _ := clTime.NewDate("")
+	var hour = int(ct.Hour)
+	this.random = &hour
 	return this
 }
 
