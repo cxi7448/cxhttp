@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -164,5 +165,53 @@ func DownloadProcess(link, localPath string) error {
 	if err := os.Rename(tmpFile, localPath); err != nil {
 		return err
 	}
+	return nil
+}
+
+func CopyDir(src, dest string) error {
+	// 读取源目录
+	entries, err := ioutil.ReadDir(src)
+	if err != nil {
+		return err
+	}
+
+	// 创建目标目录
+	err = os.MkdirAll(dest, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		srcPath := filepath.Join(src, entry.Name())
+		destPath := filepath.Join(dest, entry.Name())
+
+		// 判断是否是文件
+		if entry.IsDir() {
+			// 递归复制子目录
+			err = CopyDir(srcPath, destPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			// 复制文件
+			input, err := os.Open(srcPath)
+			if err != nil {
+				return err
+			}
+			defer input.Close()
+
+			output, err := os.Create(destPath)
+			if err != nil {
+				return err
+			}
+			defer output.Close()
+
+			_, err = io.Copy(output, input)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
