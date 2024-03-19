@@ -24,14 +24,19 @@ func New(input string) *Ximage {
 		Input: input,
 		Ext:   input[strings.LastIndex(input, "."):],
 	}
-	buffer, err := ioutil.ReadFile(input)
-	if err != nil {
-		result.Err = err
-		return result
-	}
-	result.Buffer = buffer
+	result.ReadFile(input)
 	result.ImageType = result.GetImageType()
 	return result
+}
+
+func (this *Ximage) ReadFile(input string) *Ximage {
+	buffer, err := ioutil.ReadFile(input)
+	if err != nil {
+		this.Err = err
+		return this
+	}
+	this.Buffer = buffer
+	return this
 }
 
 func (this *Ximage) IsError() bool {

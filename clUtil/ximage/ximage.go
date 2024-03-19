@@ -65,6 +65,7 @@ func ImageAdaptionToSize(input string, max_size float64, _quality, _min_quality 
 		clLog.Error("图片压缩失败：%v", info.Err)
 		return "", info.Err
 	}
+	clLog.Info("大小:%v quality:%v", float64(len(info.Buffer))/1000, _quality)
 	if info.IsWebp() {
 		return info.Output, nil
 	}
@@ -76,13 +77,16 @@ func ImageAdaptionToSize(input string, max_size float64, _quality, _min_quality 
 		return info.Output, nil
 	}
 	os.RemoveAll(info.Output)
-	return ImageAdaptionToSize(input, max_size, _quality-10, _min_quality)
+	return ImageAdaptionToSize(input, max_size, _quality-5, _min_quality)
 }
 func ImageToWebpV2(input string, quality int) *Ximage {
 	xi := New(input)
 	err := xi.ImageToWebp(quality)
 	if err != nil {
 		clLog.Error("转换错误:%v", err)
+	} else {
+		// 更新字节大小
+		xi.ReadFile(xi.Output)
 	}
 	return xi
 }
