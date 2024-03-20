@@ -326,6 +326,9 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		rw.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%v", resp.Data.Title))
 		rw.Write(resp.Data.Content)
 		return
+	} else if contentType == "301" {
+		http.Redirect(rw, rq, content, http.StatusMovedPermanently)
+		return
 	}
 	rw.Header().Set("Content-Type", contentType)
 	rw.Header().Set("Charset", "UTF-8")
