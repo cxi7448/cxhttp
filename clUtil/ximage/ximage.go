@@ -9,7 +9,6 @@ import (
 	_ "image/jpeg"
 	"image/png"
 	_ "image/png"
-	"io/ioutil"
 	"os"
 	"time"
 )
@@ -23,32 +22,6 @@ func init() {
 }
 
 const perSize = 1000 // 1kb
-
-// 设置最大字节，超过最大字节的话，使用min_quality压缩 默认quality压缩
-// max_size 单位: KB
-// max_size 单位: KB
-func ImageToWebpByMaxSize(input string, max_size float64, quality, min_quality int) (string, error) {
-	path, err := ImageToWebp(input, quality)
-	if err != nil {
-		clLog.Error("压缩图片失败:%v", err)
-		return "", err
-	}
-	content, err := ioutil.ReadFile(path)
-	if err != nil {
-		clLog.Error("读取压缩后的图片失败：%v", err)
-		return "", err
-	}
-	if float64(len(content)) >= max_size {
-		defer os.RemoveAll(path)
-		new_path, err := ImageToWebp(path, min_quality)
-		if err != nil {
-			clLog.Error("压缩图片失败:%v", err)
-			return "", err
-		}
-		return new_path, nil
-	}
-	return path, nil
-}
 
 func ImageToWebp(input string, quality int) (string, error) {
 	info := New(input)
@@ -180,18 +153,6 @@ func IsPng(localPath string) bool {
 }
 
 func GetImageType(file string) (string, error) {
-	//f, err := os.Open(file)
-	//header := make([]byte, 512)
-	//var f2 = &os.File{}
-	//f2 = f
-	//_, err = f2.Read(header)
-	//if err != nil {
-	//	clLog.Error("读取文件[%v]头失败:%v", file, err)
-	//	return "", err
-	//}
-	//filetype := http.DetectContentType(header)
-	//defer f.Close()
-	//defer f2.Close()
 	info := New(file)
 	return info.GetImageType(), nil
 }
