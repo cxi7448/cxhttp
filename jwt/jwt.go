@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	TokenExpireDuration  = int64(3600)
-	TokenReflushDuration = int64(3600)
+	TokenExpireDuration  = int64(4000) // 有效期
+	TokenReflushDuration = int64(3600) // 刷新时间
 )
 
 var SecretKey = []byte("32honefzr7vnbm0k")
@@ -100,14 +100,18 @@ func GenToken(user *clAuth.AuthInfo) (string, error) {
 
 // 解析token
 func ParseToken(tokenStr string) (*Claims, error) {
+	clLog.Info("收到token:%v", tokenStr)
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (i interface{}, err error) {
 		return SecretKey, nil
 	})
+	clLog.Info("token:%+v", token)
 	if err != nil {
+		clLog.Error("错误了:%v", err)
 		return nil, err
 	}
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
+	clLog.Error("invalid token:%v", err)
 	return nil, errors.New("invalid token")
 }
