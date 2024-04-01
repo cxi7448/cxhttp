@@ -3,6 +3,7 @@ package xaliyun
 import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"sync"
 )
 
@@ -61,7 +62,7 @@ func (this *XAliyun) UploadFile(localPath, objectName string, _tryCount int) err
 		return this.err
 	}
 	if _tryCount <= 0 {
-		return fmt.Errorf("上传失败")
+		return fmt.Errorf("上传失败:%v", this.err)
 	}
 	bucket, err := this.Client.Bucket(this.Bucket)
 	if err != nil {
@@ -69,6 +70,7 @@ func (this *XAliyun) UploadFile(localPath, objectName string, _tryCount int) err
 	}
 	err = bucket.PutObjectFromFile(objectName, localPath)
 	if err != nil {
+		clLog.Error("错误:%v", err)
 		return this.UploadFile(localPath, objectName, _tryCount-1)
 	}
 	return nil
