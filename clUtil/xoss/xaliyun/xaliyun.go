@@ -3,6 +3,9 @@ package xaliyun
 import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"github.com/cxi7448/cxhttp/clUtil/xoss"
+	"strings"
 	"sync"
 )
 
@@ -23,6 +26,14 @@ var (
 	SECRETKEY = ""
 	REGION    = ""
 )
+
+type Config struct {
+	EndPoint  string
+	Bucket    string
+	AccessKey string
+	SecretKey string
+	Region    string
+}
 
 func Init(aliyun XAliyun) {
 	ENDPOINT = aliyun.EndPoint
@@ -56,12 +67,48 @@ func New() *XAliyun {
 	sClient = result
 	return result
 }
+
+func NewWith(config xoss.Config) *XAliyun {
+	result := &XAliyun{
+		EndPoint:  config.EndPoint,
+		Bucket:    config.Bucket,
+		AccessKey: config.AccessKey,
+		SecretKey: config.SecretKey,
+		Region:    config.Region,
+	}
+	if sClient == nil {
+		client, err := oss.New(result.EndPoint, result.AccessKey, result.SecretKey)
+		result.err = err
+		result.Client = client
+	}
+	sClient = result
+	return result
+}
+
+func (this *XAliyun) UploadContent(objectName, content string, _tryCount int) error {
+	if this.err != nil {
+		return this.err
+	}
+	if _tryCount <= 0 {
+		return fmt.Errorf("上传失败:%v", this.err)
+	}
+	bucket, err := this.Client.Bucket(this.Bucket)
+	if err != nil {
+		return err
+	}
+	err = bucket.PutObject(objectName, strings.NewReader(content))
+	if err != nil {
+		clLog.Error("错误:%v", err)
+		return this.UploadContent(objectName, content, _tryCount-1)
+	}
+	return nil
+}
 func (this *XAliyun) UploadFile(localPath, objectName string, _tryCount int) error {
 	if this.err != nil {
 		return this.err
 	}
 	if _tryCount <= 0 {
-		return fmt.Errorf("上传失败")
+		return fmt.Errorf("上传失败:%v", this.err)
 	}
 	bucket, err := this.Client.Bucket(this.Bucket)
 	if err != nil {
@@ -69,6 +116,7 @@ func (this *XAliyun) UploadFile(localPath, objectName string, _tryCount int) err
 	}
 	err = bucket.PutObjectFromFile(objectName, localPath)
 	if err != nil {
+		clLog.Error("错误:%v", err)
 		return this.UploadFile(localPath, objectName, _tryCount-1)
 	}
 	return nil

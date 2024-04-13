@@ -1,12 +1,9 @@
 package ximage
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/chai2010/webp"
 	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
-	"image"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -61,22 +58,22 @@ func (this *Ximage) ImageToWebp(quality int) error {
 		this.Err = err
 		return err
 	} else {
-		input, err := ioutil.ReadFile(this.Input)
-		if err != nil {
-			panic(err)
-		}
-		img, _, err := image.Decode(bytes.NewBuffer(input))
-		if err != nil {
-			this.Err = err
-			return err
-		}
-		webpBytes, err := webp.EncodeRGB(img, float32(quality))
-		if err != nil {
-			this.Err = err
-			return err
-		}
-		err = ioutil.WriteFile(this.Output, webpBytes, 0666)
-		//_, err := clCommon.RunCommandNoConsole(command_cwebp, this.Input, "-quiet", "-q", fmt.Sprint(quality), "-o", this.Output)
+		//input, err := ioutil.ReadFile(this.Input)
+		//if err != nil {
+		//	panic(err)
+		//}
+		//img, _, err := image.Decode(bytes.NewBuffer(input))
+		//if err != nil {
+		//	this.Err = err
+		//	return err
+		//}
+		//webpBytes, err := webp.EncodeRGB(img, float32(quality))
+		//if err != nil {
+		//	this.Err = err
+		//	return err
+		//}
+		//err = ioutil.WriteFile(this.Output, webpBytes, 0666)
+		_, err := clCommon.RunCommandNoConsole(command_cwebp, this.Input, "-quiet", "-q", fmt.Sprint(quality), "-o", this.Output)
 		this.Err = err
 		return err
 	}
