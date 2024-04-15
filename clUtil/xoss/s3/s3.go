@@ -171,3 +171,23 @@ func (this *S3) C() *minio.Client {
 func (this *S3) genToken() string {
 	return clCommon.Md5([]byte(fmt.Sprintf("%v:%v:%v:%v:%v", this.EndPoint, this.AccessKey, this.SecretKey, this.Bucket, this.Region)))
 }
+
+func (this *S3) CopyObject(oldObject, newObject string, tryCount int) error {
+	if this.Client == nil {
+		return fmt.Errorf("存储桶实例失败!")
+	}
+	source := minio.NewSourceInfo(this.Bucket, oldObject, nil)
+	d, err := minio.NewDestinationInfo(this.Bucket, newObject, nil, map[string]string{"x-amz-acl": "public-read"})
+	if err != nil {
+		clLog.Error("错误:%v", err)
+		return err
+	}
+	err = this.Client.CopyObject(d, source)
+	if err != nil {
+		clLog.Error("错误:%v", err)
+		if tryCount > 0 {
+			return this.CopyObject(oldObject, newObject, tryCount-1)
+		}
+	}
+	return err
+}
