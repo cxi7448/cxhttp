@@ -83,6 +83,9 @@ func (this *Ximage) GetImageType() string {
 	if this.ImageType != "" {
 		return this.ImageType
 	}
+	if len(this.Buffer) == 0 {
+		return ""
+	}
 	filetype := http.DetectContentType(this.Buffer[0:512])
 	this.ImageType = filetype
 	return this.ImageType

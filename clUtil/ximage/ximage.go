@@ -28,6 +28,7 @@ func ImageToWebp(input string, quality int) (string, error) {
 	err := info.ImageToWebp(quality)
 	if err != nil {
 		clLog.Error("错误:%v", err)
+		return "", err
 	}
 	return info.Output, info.Err
 }

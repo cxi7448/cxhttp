@@ -12,16 +12,17 @@ import (
 )
 
 type HttpClient struct {
-	URL       string
-	Method    string
-	Param     interface{}
-	Headers   map[string]string
-	request   *http.Request
-	respone   *http.Response
-	cookies   clJson.M
-	cookieSet func(this *HttpClient, cookie clJson.M)
-	cookieGet func(this *HttpClient) clJson.M
-	skipHttps bool // 是否跳过证书检测
+	URL         string
+	Method      string
+	Param       interface{}
+	Headers     map[string]string
+	request     *http.Request
+	respone     *http.Response
+	cookies     clJson.M
+	cookieSet   func(this *HttpClient, cookie clJson.M)
+	cookieGet   func(this *HttpClient) clJson.M
+	skipHttps   bool   // 是否跳过证书检测
+	ContentType string // 请求方法
 }
 
 func New(url string) *HttpClient {
@@ -46,6 +47,11 @@ func (this *HttpClient) SetHeaders(headers map[string]string) *HttpClient {
 	for key, value := range headers {
 		this.Headers[key] = value
 	}
+	return this
+}
+
+func (this *HttpClient) SetContentType(contentType string) *HttpClient {
+	this.ContentType = contentType
 	return this
 }
 
