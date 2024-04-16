@@ -50,6 +50,7 @@ require (
 	github.com/onsi/gomega v1.29.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
+	github.com/tencentcloud/tencentcloud-sdk-go-intl-en v3.0.939+incompatible // indirect
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
