@@ -12,6 +12,9 @@ type TxCDN struct {
 	err    error
 }
 
+var AREA_GLOBAL = "global"     // 全球
+var AREA_MAINLAND = "mainland" // 中国
+var AREA_OVERSEAS = "overseas" // 海外
 /*
 *
 腾讯云CDN管理
@@ -30,16 +33,24 @@ func New(config Config) *TxCDN {
 	return result
 }
 
-func (this *TxCDN) PushUrlCache(_url ...string) error {
+func (this *TxCDN) PushUrlCacheMulti(_url []string) error {
+	for _, url := range _url {
+		err := this.PushUrlCache(url)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (this *TxCDN) PushUrlCache(_url string) error {
 	if this.client == nil {
-		return fmt.Errorf("初始化失败!")
+		return fmt.Errorf("初始化失败")
 	}
-	var url = []*string{}
-	for _, val := range _url {
-		url = append(url, &val)
-	}
+	var url = []*string{&_url}
 	request := v20180606.NewPushUrlsCacheRequest()
 	request.Urls = url
+	request.Area = &AREA_GLOBAL
 	response, err := this.client.PushUrlsCache(request)
 	if err != nil {
 		clLog.Error("pushurl失败:%v", err)
