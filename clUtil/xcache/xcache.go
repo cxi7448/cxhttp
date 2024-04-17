@@ -68,8 +68,8 @@ func Set(key string, value interface{}, expire int64) {
 	c := cachePools[index]
 	sLocker.RUnlock()
 	if c != nil {
-		c.locker.RLock()
-		defer c.locker.RUnlock()
+		c.locker.Lock()
+		defer c.locker.Unlock()
 		c.Data[key] = Cache{
 			Key:    key,
 			Value:  value,
