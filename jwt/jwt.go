@@ -100,11 +100,9 @@ func GenToken(user *clAuth.AuthInfo) (string, error) {
 
 // 解析token
 func ParseToken(tokenStr string) (*Claims, error) {
-	clLog.Info("收到token:%v", tokenStr)
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (i interface{}, err error) {
 		return SecretKey, nil
 	})
-	clLog.Info("token:%+v", token)
 	if err != nil {
 		clLog.Error("错误了:%v", err)
 		return nil, err
@@ -112,6 +110,5 @@ func ParseToken(tokenStr string) (*Claims, error) {
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
-	clLog.Error("invalid token:%v", err)
 	return nil, errors.New("invalid token")
 }
