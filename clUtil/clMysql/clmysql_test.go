@@ -3,8 +3,39 @@ package clMysql
 import (
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"reflect"
 	"testing"
 )
+
+type T struct {
+	Name string `json:"name" db:"name"`
+	Test uint32 `json:"test" db:"test"`
+}
+
+func List(rows interface{}) {
+	//t := reflect.ValueOf(rows)
+	//t := reflect.TypeOf(&rows)
+	//fmt.Printf("%+v \n", t.Elem())
+	_value := reflect.ValueOf(rows)
+	fmt.Println(_value.Elem().Len())
+	//fmt.Println(_value.Len())
+	//_valueE := _value.Elem()
+	//fmt.Println(_valueE)
+	//_valueE = _valueE.Slice(0, _valueE.Cap())
+}
+
+func ListV2(rows interface{}) {
+	List(rows)
+}
+
+func TestGetInsertSql(t *testing.T) {
+	rows := []T{
+		{},
+		{},
+	}
+	ListV2(&rows)
+	//List(&rows)
+}
 
 func TestAddMaster(t *testing.T) {
 

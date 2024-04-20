@@ -137,6 +137,22 @@ func (this *SqlBuider) Table(tablename string) *SqlBuider {
 	return this
 }
 
+func (this *SqlBuider) List(table, where string, pageid, pcount int32, rows interface{}) (int32, error) {
+	err := this.Table(table).Where(where).Page(pageid, pcount).FindAll(rows)
+	if err != nil {
+		return 0, err
+	}
+	total := int32(reflect.ValueOf(rows).Elem().Len())
+	if pageid == 0 && total == pcount {
+		i, err := this.Table(table).Where(where).Count()
+		if err != nil {
+			fmt.Printf("Mysql.List错误:%v\n", err)
+		}
+		total = i
+	}
+	return total, nil
+}
+
 /*
 *
 
