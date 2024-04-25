@@ -1,11 +1,11 @@
 package xaliyun
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/clUtil/xoss"
-	"strings"
 	"sync"
 )
 
@@ -85,7 +85,7 @@ func NewWith(config xoss.Config) *XAliyun {
 	return result
 }
 
-func (this *XAliyun) UploadContent(objectName, content string, _tryCount int) error {
+func (this *XAliyun) UploadContent(objectName string, content []byte, _tryCount int) error {
 	if this.err != nil {
 		return this.err
 	}
@@ -96,7 +96,7 @@ func (this *XAliyun) UploadContent(objectName, content string, _tryCount int) er
 	if err != nil {
 		return err
 	}
-	err = bucket.PutObject(objectName, strings.NewReader(content))
+	err = bucket.PutObject(objectName, bytes.NewReader(content))
 	if err != nil {
 		clLog.Error("错误:%v", err)
 		return this.UploadContent(objectName, content, _tryCount-1)

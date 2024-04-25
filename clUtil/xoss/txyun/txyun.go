@@ -1,6 +1,7 @@
 package txyun
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
@@ -8,7 +9,6 @@ import (
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 /*
@@ -52,14 +52,14 @@ func (this *XTxyun) UploadFile(objectName, localPath string, tryCount int) error
 	return err
 }
 
-func (this *XTxyun) UploadContent(objectName, content string, tryCount int) error {
+func (this *XTxyun) UploadContent(objectName string, content []byte, tryCount int) error {
 	if this.Client == nil {
 		return fmt.Errorf("创建Client失败!")
 	}
 	if tryCount <= 0 {
 		return fmt.Errorf("腾讯云上传失败！")
 	}
-	_, err := this.Client.Object.Put(context.Background(), objectName, strings.NewReader(content), nil)
+	_, err := this.Client.Object.Put(context.Background(), objectName, bytes.NewReader(content), nil)
 	if err != nil {
 		clLog.Error("腾讯云上传错误:%v", err)
 		return this.UploadContent(objectName, content, tryCount-1)

@@ -1,6 +1,7 @@
 package bdyun
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/baidubce/bce-sdk-go/services/bos"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
@@ -23,14 +24,14 @@ func NewWith(config xoss.Config) *XBdYun {
 	return result
 }
 
-func (this *XBdYun) UploadContent(objectName, content string, tryCount int) error {
+func (this *XBdYun) UploadContent(objectName string, content []byte, tryCount int) error {
 	if this.Client == nil {
 		return fmt.Errorf("初始化失败")
 	}
 	if tryCount <= 0 {
 		return fmt.Errorf("访问百度BOS失败")
 	}
-	_, err := this.Client.PutObjectFromString(this.Bucket, objectName, content, nil)
+	_, err := this.Client.PutObjectFromStream(this.Bucket, objectName, bytes.NewBuffer(content), nil)
 	if err != nil {
 		clLog.Error("上传百度云错误：%v", err)
 		return this.UploadContent(objectName, content, tryCount-1)
