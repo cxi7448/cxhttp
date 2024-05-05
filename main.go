@@ -12,7 +12,7 @@ import (
 const HTTPServerPort = 19999
 
 func main() {
-	clLog.SetLogFlag(0)
+	//clLog.SetLogFlag(0)
 	clGlobal.Init("./cl.conf")
 	var module = "table"
 	if len(os.Args) < 2 {
@@ -113,6 +113,7 @@ func buildTable() {
 		}
 		result, err := xbuild.BuildModel(arg)
 		if err != nil {
+			clLog.Error("错误:%v", err)
 			continue
 		}
 		fmt.Printf("const Table = \"%v\"\n", arg)
