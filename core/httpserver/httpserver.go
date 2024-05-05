@@ -329,6 +329,9 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 	} else if contentType == "301" {
 		http.Redirect(rw, rq, content, http.StatusMovedPermanently)
 		return
+	} else if contentType == "302" {
+		http.Redirect(rw, rq, content, http.StatusFound)
+		return
 	}
 	rw.Header().Set("Content-Type", contentType)
 	rw.Header().Set("Charset", "UTF-8")
