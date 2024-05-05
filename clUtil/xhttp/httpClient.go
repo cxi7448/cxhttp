@@ -18,6 +18,7 @@ type HttpClient struct {
 	Headers     map[string]string
 	request     *http.Request
 	respone     *http.Response
+	body        []byte
 	cookies     clJson.M
 	cookieSet   func(this *HttpClient, cookie clJson.M)
 	cookieGet   func(this *HttpClient) clJson.M
@@ -117,6 +118,7 @@ func (this *HttpClient) do(result interface{}) error {
 		return err
 	}
 	this.respone = resp
+	this.body = body
 	this.saveCookie()
 	err = json.Unmarshal(body, result)
 	if err != nil {
@@ -125,6 +127,10 @@ func (this *HttpClient) do(result interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func (this *HttpClient) GetBody() []byte {
+	return this.body
 }
 
 func (this *HttpClient) saveCookie() {

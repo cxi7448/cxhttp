@@ -63,7 +63,7 @@ func (this Claims) IsReflush() bool {
 	return this.ReflushTime < time.Now().Unix()
 }
 func (this Claims) GetUser() *clAuth.AuthInfo {
-	user := clAuth.NewUser(this.UserInfo.Uid, "")
+	user := clAuth.NewUser(this.UserInfo.Uid, this.UserInfo.Token)
 	user.ExtraData = this.UserInfo.ExtraData
 	return user
 }
