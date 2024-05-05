@@ -34,6 +34,9 @@ type Claims struct {
 
 func (this Claims) SaveToRedis() {
 	redis := clGlobal.GetRedis()
+	if redis == nil {
+		return
+	}
 	err := redis.Set(fmt.Sprintf("%v%v", JWT_PREFIX, this.UserInfo.Uid), this.UserInfo, int32(TokenExpireDuration))
 	if err != nil {
 		clLog.Error("存入redis失败:%v", err)
@@ -43,6 +46,9 @@ func (this Claims) SaveToRedis() {
 // 从redis中校验，redis不存在的时候，表示有效，存在的时候比对签名，签名一样的有效，不一样的无效
 func (this Claims) IsEffective() bool {
 	redis := clGlobal.GetRedis()
+	if redis == nil {
+		return true
+	}
 	uStr := redis.Get(fmt.Sprintf("%v%v", JWT_PREFIX, this.UserInfo.Uid))
 	if uStr != "" {
 		uInfo := UserInfo{}
