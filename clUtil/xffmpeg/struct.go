@@ -24,7 +24,7 @@ type FFmpeg struct {
 func New() *FFmpeg {
 	ffmpeg := &FFmpeg{
 		args: []string{},
-		cmd:  "", // 默认环境变量的值
+		cmd:  "ffmpeg", // 默认环境变量的值
 	}
 	var paths []string
 	var filename string
@@ -44,13 +44,14 @@ func New() *FFmpeg {
 	if len(paths) > 0 {
 		// 环境变量优先级最高
 		for _, path := range paths {
-			ffmpeg_cmd = fmt.Sprintf("%v/ffmpeg", path)
+			ffmpeg_cmd = fmt.Sprintf("%v/%v", path, filename)
 			if clFile.IsFile(ffmpeg_cmd) {
 				ffmpeg.Cmd(ffmpeg_cmd)
 				break
 			}
 		}
 	}
+	clLog.Info("ffmpeg命令:%v", ffmpeg.cmd)
 	return ffmpeg
 }
 

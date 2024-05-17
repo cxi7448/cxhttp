@@ -20,6 +20,7 @@ import (
 )
 
 type ServerParam struct {
+	AcName      string
 	RemoteIP    string     // 远程IP地址
 	RequestURI  string     // 请求URI
 	UriData     *HttpParam // uri上的参数列表
@@ -349,6 +350,7 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 		ServerInfo: _server,
 		UserInfo:   authInfo,
 		Param:      _param,
+		Rule:       ruleinfo,
 	})
 	if beforeParam.RejectResp != "" {
 		return beforeParam.RejectResp, ruleinfo.RespContent

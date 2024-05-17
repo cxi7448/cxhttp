@@ -52,7 +52,7 @@ func Md5(str []byte) string {
 // @lastUpdate 2019-08-04
 // @comment 字符串转int
 func Int(ceil string) int {
-	i, err := strconv.Atoi(strings.Trim(ceil, " "))
+	i, err := strconv.Atoi(ceil)
 	if err != nil {
 		return 0
 	}
@@ -63,7 +63,7 @@ func Int(ceil string) int {
 // @lastUpdate 2019-08-04
 // @comment 字符串转int8
 func Int8(ceil string) int8 {
-	ib, err := strconv.ParseInt(strings.Trim(ceil, " "), 10, 8)
+	ib, err := strconv.ParseInt(ceil, 10, 8)
 	if err == nil {
 		return int8(ib)
 	}
@@ -74,7 +74,7 @@ func Int8(ceil string) int8 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转int32
 func Int32(ceil string) int32 {
-	ib, err := strconv.ParseInt(strings.Trim(ceil, " "), 10, 32)
+	ib, err := strconv.ParseInt(ceil, 10, 32)
 	if err == nil {
 		return int32(ib)
 	}
@@ -85,7 +85,7 @@ func Int32(ceil string) int32 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转int64
 func Int64(ceil string) int64 {
-	ib, err := strconv.ParseInt(strings.Trim(ceil, " "), 10, 64)
+	ib, err := strconv.ParseInt(ceil, 10, 64)
 	if err == nil {
 		return ib
 	}
@@ -96,7 +96,7 @@ func Int64(ceil string) int64 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转uint8
 func Uint8(ceil string) uint8 {
-	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 10, 8)
+	ib, err := strconv.ParseUint(ceil, 10, 8)
 	if err == nil {
 		return uint8(ib)
 	}
@@ -107,7 +107,7 @@ func Uint8(ceil string) uint8 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转uint32
 func Uint32(ceil string) uint32 {
-	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 10, 32)
+	ib, err := strconv.ParseUint(ceil, 10, 32)
 	if err == nil {
 		return uint32(ib)
 	}
@@ -118,7 +118,7 @@ func Uint32(ceil string) uint32 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转uint64
 func Uint64(ceil string) uint64 {
-	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 10, 64)
+	ib, err := strconv.ParseUint(ceil, 10, 64)
 	if err == nil {
 		return ib
 	}
@@ -129,7 +129,7 @@ func Uint64(ceil string) uint64 {
 // @lastUpdate 2019-08-04
 // @comment 16进制转uint8
 func HexUnit8(ceil string) uint8 {
-	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 16, 8)
+	ib, err := strconv.ParseUint(ceil, 16, 8)
 	if err == nil {
 		return uint8(ib)
 	}
@@ -140,7 +140,7 @@ func HexUnit8(ceil string) uint8 {
 // @lastUpdate 2019-08-04
 // @comment 16进制转uint32
 func HexUnit32(ceil string) uint32 {
-	ib, err := strconv.ParseUint(strings.Trim(ceil, " "), 16, 32)
+	ib, err := strconv.ParseUint(ceil, 16, 32)
 	if err == nil {
 		return uint32(ib)
 	}
@@ -151,7 +151,7 @@ func HexUnit32(ceil string) uint32 {
 // @lastUpdate 2019-08-32
 // @comment 字符串转float32
 func Float32(ceil string) float32 {
-	fb, err := strconv.ParseFloat(strings.Trim(ceil, " "), 32)
+	fb, err := strconv.ParseFloat(ceil, 32)
 	if err == nil {
 		return float32(fb)
 	}
@@ -162,7 +162,7 @@ func Float32(ceil string) float32 {
 // @lastUpdate 2019-08-04
 // @comment 字符串转float64
 func Float64(ceil string) float64 {
-	fb, err := strconv.ParseFloat(strings.Trim(ceil, " "), 64)
+	fb, err := strconv.ParseFloat(ceil, 64)
 	if err == nil {
 		return fb
 	}

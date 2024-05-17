@@ -37,6 +37,7 @@ type RequestBeforeParam struct {
 	ServerInfo *ServerParam     // 服务器信息
 	UserInfo   *clAuth.AuthInfo // 用户信息
 	Param      *HttpParam       // 请求的参数
+	Rule       *Rule            // 路径设置
 }
 
 // 针对指定request的前置动作返回值
