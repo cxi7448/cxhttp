@@ -1271,3 +1271,28 @@ func (this *SqlBuider) Inc(columns map[string]int) error {
 	_, err := this.ExecCustom(this.finalSql)
 	return err
 }
+
+func (this *SqlBuider) IncFloat(columns map[string]float64) error {
+	if this.tablename == "" {
+		return fmt.Errorf("unknown table")
+	}
+
+	sql := fmt.Sprintf("update %v set ", this.tablename)
+	update_column := []string{}
+	for column, inc := range columns {
+		update_column = append(update_column, fmt.Sprintf("%v = %v + %v", column, column, inc))
+	}
+	sql += fmt.Sprintf(" %v ", strings.Join(update_column, ","))
+	if this.whereStr != "" {
+		sql += fmt.Sprintf(" where %v ", this.whereStr)
+	}
+	if this.orders != "" {
+		sql += fmt.Sprintf(" %v ", this.orders)
+	}
+	if this.limit != "" {
+		sql += fmt.Sprintf(" %v ", this.limit)
+	}
+	this.finalSql = sql
+	_, err := this.ExecCustom(this.finalSql)
+	return err
+}
