@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -337,4 +338,9 @@ func ParseSize(size float64) string {
 		dw = "G"
 	}
 	return fmt.Sprintf("%0.2f%v", size, dw)
+}
+
+func Sha256(str string) string {
+	hash := sha256.Sum256([]byte(str))
+	return hex.EncodeToString(hash[:])
 }
