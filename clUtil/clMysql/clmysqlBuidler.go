@@ -137,8 +137,12 @@ func (this *SqlBuider) Table(tablename string) *SqlBuider {
 	return this
 }
 
-func (this *SqlBuider) List(table, where string, pageid, pcount int32, rows interface{}) (int32, error) {
-	err := this.Table(table).Where(where).Page(pageid, pcount).FindAll(rows)
+func (this *SqlBuider) List(table, where string, pageid, pcount int32, rows interface{}, _order ...string) (int32, error) {
+	builder := this.Table(table)
+	if len(_order) > 0 {
+		builder.Order(_order[0])
+	}
+	err := builder.Where(where).Page(pageid, pcount).FindAll(rows)
 	if err != nil {
 		return 0, err
 	}
