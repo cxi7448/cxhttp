@@ -25,44 +25,11 @@ func main() {
 		buildTable()
 	case "rule":
 		buildRule()
+	case "api":
+		buildApi()
 	default:
 		fmt.Println(desc)
 	}
-
-	//clGlobal.Init("cl.conf")
-	//
-	//rule_list.Init()
-	//rule_list.InitSuperAPI()
-	//
-	//clAuth.SetAuthPrefix("U_INFO")
-	//
-	//httpserver.SetAESKey("5d41402abc4b2a76b9719d911017c592")
-	//// 关闭上传功能
-	//httpserver.SetEnableUploadFile(false)
-	//// 关闭上传调试页
-	//httpserver.SetEnableUploadTest(false)
-	//
-	//clLog.Info("正在启动服务，端口: %v", HTTPServerPort)
-	//clLog.Info("可尝试使用 http://localhost:%v 访问", HTTPServerPort)
-	//clAuth.SetGetUserByDB(func(_uid uint64) *clAuth.AuthInfo {
-	//	return &clAuth.AuthInfo{
-	//		Uid:        1,
-	//		Token:      "1000",
-	//		LastUptime: 0,
-	//		IsLogin:    true,
-	//		ExtraData:  nil,
-	//	}
-	//})
-	//clGlobal.SkyConf.DebugRouter = true
-	//httpserver.SetUploadFileSizeLimit(1024 * 1024 * 300)
-	//
-	//// 根据路由配置表生成api文档
-	////rule.ApiGeneral("./apis", "apis", "/request")
-	//
-	//// 根据数据库中的配置生成模型
-	////modelCreator.CreateAllModelFile("127.0.0.1", "root", "root", "testdb", "testModel")
-	//
-	//httpserver.StartServer(HTTPServerPort)
 }
 
 const desc = `使用帮助
@@ -105,6 +72,29 @@ const desc = `使用帮助
 		CallBack: controller.ApiUserLogin,
 	})
 `
+
+// 自动生成CURD
+func buildApi() {
+	if len(os.Args) < 3 {
+		fmt.Println("请输入表名")
+		return
+	}
+	table := os.Args[2]
+	controller := ""
+	model := ""
+	if len(os.Args) > 3 {
+		controller = os.Args[3]
+	}
+	if len(os.Args) > 4 {
+		model = os.Args[4]
+	}
+	err := xbuild.BuildCURD(table, controller, model)
+	if err != nil {
+		fmt.Println("生成错误:", err)
+	} else {
+		fmt.Println("生成完毕")
+	}
+}
 
 func buildTable() {
 	for _, arg := range os.Args[2:] {
