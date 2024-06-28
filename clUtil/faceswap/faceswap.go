@@ -12,6 +12,9 @@ face: 脸图
 _type: API分类
 */
 func Faceswap(src, face Img, _type ...string) (string, error) {
+	clLog.Info("收到转换信息")
+	clLog.Info("src:%+v", src)
+	clLog.Info("face:%+v", face)
 	api_type := TYPE_AKOOL
 	if len(_type) > 0 {
 		api_type = _type[0]

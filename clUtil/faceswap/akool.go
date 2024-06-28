@@ -126,10 +126,10 @@ func (this *Akool) Detect(image string) (string, error) {
 	client.SetHeaders(map[string]string{
 		"Authorization": fmt.Sprintf("Bearer %v", token),
 	})
-	folder := "./tmp/faceswap/"
+	folder := "./tmp/ai/detect"
 	os.MkdirAll(folder, 0700)
 	// 下载图片，并生成base64
-	local_path := fmt.Sprintf("./tmp/faceswap/%v", clCommon.Md5([]byte(image)))
+	local_path := fmt.Sprintf("%v/%v", folder, clCommon.Md5([]byte(image)))
 	err = clFile.Download(image, local_path)
 	if err != nil {
 		clLog.Error("文件[%v]下载失败：%v", image, err)
