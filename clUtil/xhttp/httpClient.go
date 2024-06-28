@@ -73,9 +73,14 @@ func (this *HttpClient) do(result interface{}) error {
 		if err != nil {
 			return err
 		}
+		if this.ContentType == "" {
+			this.SetContentType("application/json")
+		}
 		reqBody = strings.NewReader(string(bParam))
 	}
-
+	if this.ContentType != "" {
+		this.Headers["Content-Type"] = this.ContentType
+	}
 	request, err := http.NewRequest(this.Method, this.URL, reqBody)
 	if err != nil {
 		return err

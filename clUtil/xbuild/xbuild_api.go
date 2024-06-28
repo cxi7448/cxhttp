@@ -86,11 +86,17 @@ import (
 	controllerResult += fmt.Sprintf("rows :=[]%v.%v{}\n", table, modelName)
 	controllerResult += "where := \"1 = 1\"\n"
 	controllerResult += "db := clGlobal.GetMysql()\n"
-	controllerResult += fmt.Sprintf("err := db.NewBuilder().Table(%v.Table).Where(where).Page(pageid,pcount).FindAll(&rows)\n", table)
-	controllerResult += "if err != nil && err.Error() != \"not found\" {\n"
-	controllerResult += "clLog.Error(\"错误:%v\",err)\n"
-	controllerResult += "}\n"
-	controllerResult += "return clResponse.Success(rows)\n"
+	controllerResult += fmt.Sprintf(`
+	total, err := db.NewBuilder().List(%v.Table, where, pageid, pcount, &rows, "id desc")
+	if err != nil && err.Error() != "not found" {
+		clLog.Error("错误:%%v", err)
+	}
+	return clResponse.Success(clJson.M{
+		"list":  rows,
+		"total": total,
+	})
+`, table)
+	controllerResult += "\n"
 	controllerResult += "}\n"
 
 	// 添加

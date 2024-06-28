@@ -97,7 +97,10 @@ func UploadContent(content []byte, objectName string) error {
 
 func DecodeImage(encodePath string) (string, error) {
 	xiegang := strings.LastIndex(encodePath, "/")
-	decodePath := fmt.Sprintf("%v/decode_%v", encodePath[0:xiegang], encodePath[xiegang+1:])
+	var decodePath = "decode_" + encodePath
+	if xiegang > -1 {
+		decodePath = fmt.Sprintf("%v/decode_%v", encodePath[0:xiegang], encodePath[xiegang+1:])
+	}
 	_content, err := ioutil.ReadFile(encodePath)
 	if err != nil {
 		clLog.Error("文件[%v]打开失败:%v", encodePath, err)
