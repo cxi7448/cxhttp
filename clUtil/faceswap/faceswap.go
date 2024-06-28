@@ -11,7 +11,7 @@ src: 原图
 face: 脸图
 _type: API分类
 */
-func Faceswap(src, face string, _type ...string) error {
+func Faceswap(src, face Img, _type ...string) (string, error) {
 	api_type := TYPE_AKOOL
 	if len(_type) > 0 {
 		api_type = _type[0]
@@ -20,7 +20,7 @@ func Faceswap(src, face string, _type ...string) error {
 	case TYPE_AKOOL:
 		return akool.FaceSwap(src, face)
 	default:
-		return fmt.Errorf("未知API")
+		return "", fmt.Errorf("未知API")
 	}
 }
 

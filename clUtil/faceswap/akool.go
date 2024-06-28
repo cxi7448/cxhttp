@@ -19,14 +19,16 @@ type Akool struct {
 	ClientId     string
 	ClientSecret string
 	UserId       string
+	WebhookUrl   string
 }
 
 var akool = &Akool{}
 
-func InitAkool(clientId, clientSecret, user_id string) {
+func InitAkool(clientId, clientSecret, user_id, webhookUrl string) {
 	akool.ClientId = clientId
 	akool.ClientSecret = clientSecret
 	akool.UserId = user_id
+	akool.WebhookUrl = webhookUrl
 	clLog.Info("设置clientId[%v],clientSecret[%v],userId[%v]", clientId, clientSecret, user_id)
 }
 
@@ -51,43 +53,56 @@ func (this *Akool) GenToken() (string, error) {
 	return this.Token, nil
 }
 
-func (this *Akool) FaceSwap(src, face string) error {
+func (this *Akool) FaceSwap(src, face Img) (string, error) {
+	token, err := this.GenToken()
+	if err != nil {
+		clLog.Error("生成访问密钥错误:%v", err)
+		return "", err
+	}
 	url := "https://openapi.akool.com/api/open/v3/faceswap/highquality/specifyimage"
 	client := xhttp.New(url)
 	client.SetHeaders(map[string]string{
-		"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2QwMTlhZTUwOWMxYWFmYjQ2NjBkOSIsInVpZCI6MjgzOTU3MSwiZW1haWwiOiJjamVreHdAdGN4ZmRjLmNvbSIsImNyZWRlbnRpYWxJZCI6IjY2N2QwY2IxZTUwOWMxYWFmYjQ2ODc2OSIsImZpcnN0TmFtZSI6InNncmZ2ZXIiLCJmcm9tIjoidG9PIiwidHlwZSI6InVzZXIiLCJpYXQiOjE3MTk0NzM4MzgsImV4cCI6MjAzMDUxMzgzOH0.mYJee1CRKPvxJn28Aw196op12gN7cQCOZTuE6880fV4",
+		"Authorization": fmt.Sprintf("Bearer %v", token),
 	})
-	result := clJson.M{}
-	err := client.Post(clJson.M{
+	result := struct {
+		Code uint32 `json:"code"`
+		Data struct {
+			Id    string `json:"_id"`
+			JobId string `json:"job_id"`
+			Url   string `json:"url"`
+		} `json:"data"`
+		Msg string `json:"msg"`
+	}{}
+	err = client.Post(clJson.M{
 		"targetImage": clJson.A{
 			clJson.M{
-				"path": src,
-				"opts": "691,431:899,418:787,531:733,654",
+				"path": src.Image,
+				"opts": src.Opts,
 			},
 		},
 		"sourceImage": clJson.A{
 			clJson.M{
-				"path": face,
-				"opts": "141,110:189,115:164,142:143,163",
+				"path": face.Image,
+				"opts": face.Opts,
 			},
 		},
 		"face_enhance": 0,
-		//"modifyImage":  "https://d21ksh0k4smeql.cloudfront.net/bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966.jpeg", // Modify the link address of the image
-		"modifyImage": src,
-		// https://d2qf6ukcym4kn9.cloudfront.net/final_3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg
-		"webhookUrl": "http://35.229.218.189:8082/request",
+		"modifyImage":  src.Image,
+		"webhookUrl":   this.WebhookUrl,
 	}, &result)
-	// 16:41:31 akool.go:67[Err] 请求结果:map[code:1000 data:map[_id:667d25bcdca9e468ba8eafd5 job_id:20240627084132056-4629 url:https://d2qf6ukcym4kn9.cloudfront.net/final_1-9624172f-c60a-4ff6-90e6-a8f3d67eb1b7-0158.jpg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-	clLog.Error("请求错误:%v", err)
+	if err != nil {
+		clLog.Error("访问[%v]失败:%v", url, err)
+		return "", err
+	}
 	clLog.Error("请求结果:%+v", result)
+	if result.Code != 1000 {
+		return "", fmt.Errorf(result.Msg)
+	}
 	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-
-	// GET https://openapi.akool.com/api/open/v3/faceswap/result/listbyids?_ids=667d2284dca9e468ba8ead23
-	return err
+	return result.Data.Url, err
 }
 
 func (this *Akool) CheckResult() error {
-	//
 	url := "https://openapi.akool.com/api/open/v3/faceswap/result/listbyids?_ids=667d2284dca9e468ba8ead23"
 	client := xhttp.New(url)
 	client.SetHeaders(map[string]string{
