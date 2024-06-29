@@ -94,7 +94,56 @@ func (this *Akool) FaceSwap(src, face Img) (string, error) {
 		clLog.Error("访问[%v]失败:%v", url, err)
 		return "", err
 	}
-	clLog.Error("请求结果:%+v", result)
+	clLog.Debug("请求结果:%+v", result)
+	if result.Code != 1000 {
+		return "", fmt.Errorf(result.Msg)
+	}
+	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
+	return result.Data.Url, err
+}
+
+func (this *Akool) FaceSwapVideo(src, face Img, video_url string) (string, error) {
+	token, err := this.GenToken()
+	if err != nil {
+		clLog.Error("生成访问密钥错误:%v", err)
+		return "", err
+	}
+	url := "https://openapi.akool.com/api/open/v3/faceswap/highquality/specifyvideo"
+	client := xhttp.New(url)
+	client.SetHeaders(map[string]string{
+		"Authorization": fmt.Sprintf("Bearer %v", token),
+	})
+	result := struct {
+		Code uint32 `json:"code"`
+		Data struct {
+			Id    string `json:"_id"`
+			JobId string `json:"job_id"`
+			Url   string `json:"url"`
+		} `json:"data"`
+		Msg string `json:"msg"`
+	}{}
+	err = client.Post(clJson.M{
+		"targetImage": clJson.A{
+			clJson.M{
+				"path": src.Image,
+				"opts": src.Opts,
+			},
+		},
+		"sourceImage": clJson.A{
+			clJson.M{
+				"path": face.Image,
+				"opts": face.Opts,
+			},
+		},
+		"face_enhance": 0,
+		"modifyVideo":  video_url,
+		"webhookUrl":   this.WebhookUrl,
+	}, &result)
+	if err != nil {
+		clLog.Error("访问[%v]失败:%v", url, err)
+		return "", err
+	}
+	clLog.Debug("视频请求结果:%+v", result)
 	if result.Code != 1000 {
 		return "", fmt.Errorf(result.Msg)
 	}
