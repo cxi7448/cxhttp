@@ -223,3 +223,33 @@ func (this *Akool) Detect(image string) (string, error) {
 	LandmarksStr = strings.TrimRight(LandmarksStr, "]")
 	return LandmarksStr, err
 }
+
+func (this *Akool) DetectVideo(src, frame_time string) (string, error) {
+	token, err := this.GenToken()
+	if err != nil {
+		return "", err
+	}
+	url := "https://faceswap.akool.com/api/v2/faceswap/material/create"
+	client := xhttp.New(url)
+	client.SetHeaders(map[string]string{
+		"Authorization": fmt.Sprintf("Bearer %v", token),
+	})
+	result := clJson.M{}
+	err = client.Post(clJson.M{
+		"frame_time": frame_time,
+		"url":        src,
+		"userId":     this.UserId,
+	}, &result)
+	if err != nil {
+		clLog.Error("访问失败:%v", err)
+		return "", err
+	}
+	clLog.Info("请求结果:%+v", result)
+	if result.Uint32("error_code") != 0 {
+		return "", fmt.Errorf(result.Get("error_msg"))
+	}
+	LandmarksStr := result.Get("landmarks_str")
+	LandmarksStr = strings.TrimLeft(LandmarksStr, "[")
+	LandmarksStr = strings.TrimRight(LandmarksStr, "]")
+	return LandmarksStr, err
+}

@@ -65,3 +65,24 @@ func GenDetect(image string, _type ...string) (string, error) {
 		return "", fmt.Errorf("未知API")
 	}
 }
+
+/*
+*
+生成脸部数据opts
+src : 视频地址
+frame_time: 帧数 10 / 4  => 0，2.5，5.7.5
+*/
+func GenDetectVideo(src, frame_time string, _type ...string) (string, error) {
+	clLog.Info("视频地址:%v", src)
+	clLog.Info("帧数:%v", frame_time)
+	api_type := TYPE_AKOOL
+	if len(_type) > 0 {
+		api_type = _type[0]
+	}
+	switch api_type {
+	case TYPE_AKOOL:
+		return akool.DetectVideo(src, frame_time)
+	default:
+		return "", fmt.Errorf("未知API")
+	}
+}

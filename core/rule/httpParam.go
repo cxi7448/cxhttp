@@ -1,6 +1,8 @@
 package rule
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/cxi7448/cxhttp/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"strconv"
@@ -232,6 +234,14 @@ func (this *HttpParam) GetFloatSplit(_key string) []float64 {
 	}
 
 	return float64Arr
+}
+
+func (this *HttpParam) GetObj(_key string, value interface{}) error {
+	val, exists := this.values[_key]
+	if !exists {
+		return fmt.Errorf(fmt.Sprintf("KEY %v NOT EXISTS", _key))
+	}
+	return json.Unmarshal([]byte(val), value)
 }
 
 // @author cxhttp
