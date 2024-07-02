@@ -94,7 +94,7 @@ func (this *Akool) FaceSwap(src, face Img) (string, string, error) {
 		return "", "", fmt.Errorf(result.Msg)
 	}
 	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-	return result.Data.Url, result.Data.JobId, err
+	return result.Data.Url, result.Data.Id, err
 }
 
 func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, string, error) {
@@ -147,7 +147,7 @@ func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, s
 		return "", "", fmt.Errorf(result.Msg)
 	}
 	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-	return result.Data.Url, result.Data.JobId, err
+	return result.Data.Url, result.Data.Id, err
 }
 
 // 0等待中  1成功 2失败
