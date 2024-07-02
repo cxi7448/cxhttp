@@ -31,7 +31,7 @@ func Faceswap(src, face Img, _type ...string) (string, error) {
 *
 视频转换
 */
-func FaceswapVideo(src, face Img, video_url string, _type ...string) (string, error) {
+func FaceswapVideo(src, face []Img, video_url string, _type ...string) (string, error) {
 	clLog.Info("收到转换信息")
 	clLog.Info("src:%+v", src)
 	clLog.Info("face:%+v", face)

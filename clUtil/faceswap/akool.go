@@ -97,7 +97,7 @@ func (this *Akool) FaceSwap(src, face Img) (string, error) {
 	return result.Data.Url, err
 }
 
-func (this *Akool) FaceSwapVideo(src, face Img, video_url string) (string, error) {
+func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, error) {
 	token, err := this.GenToken()
 	if err != nil {
 		clLog.Error("生成访问密钥错误:%v", err)
@@ -117,19 +117,23 @@ func (this *Akool) FaceSwapVideo(src, face Img, video_url string) (string, error
 		} `json:"data"`
 		Msg string `json:"msg"`
 	}{}
+	targetImage := clJson.A{}
+	sourceImage := clJson.A{}
+	for _, val := range srcs {
+		targetImage = append(targetImage, clJson.M{
+			"path": val.Image,
+			"opts": val.Opts,
+		})
+	}
+	for _, val := range faces {
+		sourceImage = append(sourceImage, clJson.M{
+			"path": val.Image,
+			"opts": val.Opts,
+		})
+	}
 	err = client.Post(clJson.M{
-		"targetImage": clJson.A{
-			clJson.M{
-				"path": src.Image,
-				"opts": src.Opts,
-			},
-		},
-		"sourceImage": clJson.A{
-			clJson.M{
-				"path": face.Image,
-				"opts": face.Opts,
-			},
-		},
+		"targetImage":  targetImage,
+		"sourceImage":  sourceImage,
 		"face_enhance": 0,
 		"modifyVideo":  video_url,
 		"webhookUrl":   this.WebhookUrl,
