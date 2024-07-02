@@ -163,7 +163,20 @@ func (this *Akool) CheckResult(id string) (uint32, error) {
 	client.SetHeaders(map[string]string{
 		"Authorization": fmt.Sprintf("Bearer %v", token),
 	})
-	result := clJson.M{}
+	result := struct {
+		Code uint32 `json:"code"`
+		Msg  string `json:"msg"`
+		Data struct {
+			Result struct {
+				FaceswapStatus uint32 `json:"faceswap_status"`
+				Id             string `json:"_id"`
+				Url            string `json:"url"`
+				Image          uint32 `json:"image"`
+				CreatedAt      string `json:"createdAt"`
+				JobId          string `json:"job_id"`
+			} `json:"result"`
+		} `json:"data"`
+	}{}
 	err = client.Get(&result)
 	if err != nil {
 		clLog.Error("访问API失败:%v", err)
@@ -171,13 +184,11 @@ func (this *Akool) CheckResult(id string) (uint32, error) {
 	}
 	clLog.Info("请求结果:%+v", result)
 	// 16:33:08 akool.go:82[Info] 请求结果:map[code:1000 data:map[result:[map[_id:667d2284dca9e468ba8ead23 createdAt:2024-06-27T08:27:48.006Z deduction_duration:0 faceswap_status:3 image:1 job_id:20240627082748003-5746 uid:2.839571e+06 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg video_duration:0]]] msg:OK]
-	if result.Uint32("code") != 1000 {
-		clLog.Error("错误:%v", result.Get("msg"))
-		return 0, fmt.Errorf("错误内容:%v", result.Get("msg"))
+	if result.Code != 1000 {
+		clLog.Error("错误:%v", result.Msg)
+		return 0, fmt.Errorf("错误内容:%v", result.Msg)
 	}
-	data := result.GetMap("data") //
-	resp := data.GetMap("result")
-	status := resp.Uint32("faceswap_status")
+	status := result.Data.Result.FaceswapStatus
 	if status < 3 {
 		return 0, nil
 	}
