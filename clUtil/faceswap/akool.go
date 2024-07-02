@@ -176,7 +176,8 @@ func (this *Akool) CheckResult(id string) (uint32, error) {
 		return 0, fmt.Errorf("错误内容:%v", result.Get("msg"))
 	}
 	data := result.GetMap("data") //
-	status := data.Uint32("faceswap_status")
+	resp := data.GetMap("result")
+	status := resp.Uint32("faceswap_status")
 	if status < 3 {
 		return 0, nil
 	}
