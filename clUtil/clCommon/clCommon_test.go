@@ -2,12 +2,12 @@ package clCommon
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
 func TestUnderlineToUppercase(t *testing.T) {
-
-	fmt.Printf("%v\n", UnderlineToUppercase(true, "hello_world"))
-	fmt.Printf("%v\n", UnderlineToUppercase(false, "hello_world"))
-
+	str := ";base64,"
+	index := strings.Index(str, ";base64,")
+	fmt.Println(str[index:])
 }

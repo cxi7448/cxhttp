@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -343,4 +344,9 @@ func ParseSize(size float64) string {
 func Sha256(str string) string {
 	hash := sha256.Sum256([]byte(str))
 	return hex.EncodeToString(hash[:])
+}
+
+func Base64ToImageContent(base64_str string) ([]byte, error) {
+	index := strings.Index(base64_str, ";base64,")
+	return base64.StdEncoding.DecodeString(base64_str[index+8:])
 }

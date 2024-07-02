@@ -1,15 +1,10 @@
 package faceswap
 
 import (
-	"encoding/base64"
 	"fmt"
-	"github.com/cxi7448/cxhttp/clCommon"
-	"github.com/cxi7448/cxhttp/clUtil/clFile"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/clUtil/xhttp"
-	"io/ioutil"
-	"os"
 	"strings"
 )
 
@@ -175,36 +170,34 @@ func (this *Akool) Detect(image string) (string, error) {
 	client.SetHeaders(map[string]string{
 		"Authorization": fmt.Sprintf("Bearer %v", token),
 	})
-	folder := "./tmp/ai/detect"
-	os.MkdirAll(folder, 0700)
-	// 下载图片，并生成base64
-	local_path := fmt.Sprintf("%v/%v", folder, clCommon.Md5([]byte(image)))
-	err = clFile.Download(image, local_path)
-	if err != nil {
-		clLog.Error("文件[%v]下载失败：%v", image, err)
-		return "", err
-	}
-	content, _ := ioutil.ReadFile(local_path)
-	prefix := "data:image/jpeg;base64,"
-	if strings.HasSuffix(image, ".png") {
-		prefix = "data:image/png;base64,"
-	} else if strings.HasSuffix(image, ".webp") {
-		prefix = "data:image/webp;base64,"
-	}
+	//folder := "./tmp/ai/detect"
+	//os.MkdirAll(folder, 0700)
+	//// 下载图片，并生成base64
+	//local_path := fmt.Sprintf("%v/%v", folder, clCommon.Md5([]byte(image)))
+	//err = clFile.Download(image, local_path)
+	//if err != nil {
+	//	clLog.Error("文件[%v]下载失败：%v", image, err)
+	//	return "", err
+	//}
+	//content, _ := ioutil.ReadFile(local_path)
+	//prefix := "data:image/jpeg;base64,"
+	//if strings.HasSuffix(image, ".png") {
+	//	prefix = "data:image/png;base64,"
+	//} else if strings.HasSuffix(image, ".webp") {
+	//	prefix = "data:image/webp;base64,"
+	//}
 	result := clJson.M{}
-	//var result = struct {
-	//	ErrorCode    uint32 `json:"error_code"`
-	//	ErrorMsg     string `json:"error_msg"`
-	//	LandmarksStr []string `json:"landmarks_str"`
-	//	Seconds      float64
-	//	//Region       [][]string
-	//	//Landmarks    [][][]string
-	//}{}
-	err = client.Post(clJson.M{
+	param := clJson.M{
 		"single_face": false,
 		"userId":      this.UserId,
-		"img":         fmt.Sprintf("%v%v", prefix, base64.StdEncoding.EncodeToString(content)),
-	}, &result)
+	}
+	if strings.HasPrefix(image, "data:") {
+		// base64
+		param["img"] = image
+	} else {
+		param["image_url"] = image
+	}
+	err = client.Post(param, &result)
 	// 16:22:27 akool.go:88[Err] 请求结果:map[error_code:0 error_msg:SUCCESS landmarks:[[[141 110] [189 115] [164 142] [143 163] [0 0] [0 0]]] landmarks_str:[141,110:189,115:164,142:143,163] region:[[111 58 100 132]] seconds:0.021605968475341797 trx_id:4d3673a0-6300-4951-807d-5e3e03b50d16]
 	if err != nil {
 		clLog.Error("访问失败:%v", err)
