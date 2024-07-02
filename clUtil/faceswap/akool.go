@@ -48,11 +48,11 @@ func (this *Akool) GenToken() (string, error) {
 	return this.Token, nil
 }
 
-func (this *Akool) FaceSwap(src, face Img) (string, error) {
+func (this *Akool) FaceSwap(src, face Img) (string, string, error) {
 	token, err := this.GenToken()
 	if err != nil {
 		clLog.Error("生成访问密钥错误:%v", err)
-		return "", err
+		return "", "", err
 	}
 	url := "https://openapi.akool.com/api/open/v3/faceswap/highquality/specifyimage"
 	client := xhttp.New(url)
@@ -87,21 +87,21 @@ func (this *Akool) FaceSwap(src, face Img) (string, error) {
 	}, &result)
 	if err != nil {
 		clLog.Error("访问[%v]失败:%v", url, err)
-		return "", err
+		return "", "", err
 	}
 	clLog.Debug("请求结果:%+v", result)
 	if result.Code != 1000 {
-		return "", fmt.Errorf(result.Msg)
+		return "", "", fmt.Errorf(result.Msg)
 	}
 	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-	return result.Data.Url, err
+	return result.Data.Url, result.Data.JobId, err
 }
 
-func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, error) {
+func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, string, error) {
 	token, err := this.GenToken()
 	if err != nil {
 		clLog.Error("生成访问密钥错误:%v", err)
-		return "", err
+		return "", "", err
 	}
 	url := "https://openapi.akool.com/api/open/v3/faceswap/highquality/specifyvideo"
 	client := xhttp.New(url)
@@ -140,28 +140,52 @@ func (this *Akool) FaceSwapVideo(srcs, faces []Img, video_url string) (string, e
 	}, &result)
 	if err != nil {
 		clLog.Error("访问[%v]失败:%v", url, err)
-		return "", err
+		return "", "", err
 	}
 	clLog.Debug("视频请求结果:%+v", result)
 	if result.Code != 1000 {
-		return "", fmt.Errorf(result.Msg)
+		return "", "", fmt.Errorf(result.Msg)
 	}
 	// 16:27:48 akool.go:65[Err] 请求结果:map[code:1000 data:map[_id:667d2284dca9e468ba8ead23 job_id:20240627082748003-5746 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg] msg:Please be patient! If your results are not generated in three hours, please check your input image.]
-	return result.Data.Url, err
+	return result.Data.Url, result.Data.JobId, err
 }
 
-func (this *Akool) CheckResult() error {
-	url := "https://openapi.akool.com/api/open/v3/faceswap/result/listbyids?_ids=667d2284dca9e468ba8ead23"
+// 0等待中  1成功 2失败
+func (this *Akool) CheckResult(id string) (uint32, error) {
+	// 16:50:22 akool.go:145[Debug] 视频请求结果:{Code:1000 Data:{Id:6683bf4ddca9e468ba90e360 JobId:20240702085021960-9426 Url:https://d2qf6ukcym4kn9.cloudfront.net/final_26fd899ff32d6c40f880c67f5e1f4519053e47e66b076531a17c59-627da158-1262-4e38-8162-a0e2f4f0b1d9-2554.mp4} Msg:Please be patient! If your results are not generated in three hours, please check your input video.}
+	token, err := this.GenToken()
+	if err != nil {
+		clLog.Error("生成访问密钥错误:%v", err)
+		return 0, err
+	}
+	url := fmt.Sprintf("https://openapi.akool.com/api/open/v3/faceswap/result/listbyids?_ids=%v", id)
 	client := xhttp.New(url)
 	client.SetHeaders(map[string]string{
-		"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2N2QwMTlhZTUwOWMxYWFmYjQ2NjBkOSIsInVpZCI6MjgzOTU3MSwiZW1haWwiOiJjamVreHdAdGN4ZmRjLmNvbSIsImNyZWRlbnRpYWxJZCI6IjY2N2QwY2IxZTUwOWMxYWFmYjQ2ODc2OSIsImZpcnN0TmFtZSI6InNncmZ2ZXIiLCJmcm9tIjoidG9PIiwidHlwZSI6InVzZXIiLCJpYXQiOjE3MTk0NzM4MzgsImV4cCI6MjAzMDUxMzgzOH0.mYJee1CRKPvxJn28Aw196op12gN7cQCOZTuE6880fV4",
+		"Authorization": fmt.Sprintf("Bearer %v", token),
 	})
 	result := clJson.M{}
-	err := client.Get(&result)
-	clLog.Error("请求错误:%v", err)
+	err = client.Get(&result)
+	if err != nil {
+		clLog.Error("访问API失败:%v", err)
+		return 0, err
+	}
 	clLog.Info("请求结果:%+v", result)
 	// 16:33:08 akool.go:82[Info] 请求结果:map[code:1000 data:map[result:[map[_id:667d2284dca9e468ba8ead23 createdAt:2024-06-27T08:27:48.006Z deduction_duration:0 faceswap_status:3 image:1 job_id:20240627082748003-5746 uid:2.839571e+06 url:https://d2qf6ukcym4kn9.cloudfront.net/final_bdd1c994c4cd7a58926088ae8a479168-1705462506461-1966-3d389dcf-f9f7-4134-9594-9fc2a0fcc6f4-2272.jpeg video_duration:0]]] msg:OK]
-	return err
+	if result.Uint32("code") != 1000 {
+		clLog.Error("错误:%v", result.Get("msg"))
+		return 0, fmt.Errorf("错误内容:%v", result.Get("msg"))
+	}
+	data := result.GetMap("data") //
+	status := data.Uint32("faceswap_status")
+	if status < 3 {
+		return 0, nil
+	}
+	if status == 3 {
+		return 1, nil
+	} else {
+		clLog.Error("制作失败:%+v", result)
+		return 2, nil
+	}
 }
 
 func (this *Akool) Detect(image string) (string, error) {

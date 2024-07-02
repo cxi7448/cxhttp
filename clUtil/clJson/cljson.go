@@ -34,6 +34,14 @@ func (this *M) Uint32(key string) uint32 {
 	return parseUint32(val)
 }
 
+func (this *M) GetMap(key string) M {
+	res, ok := (*this)[key]
+	if !ok {
+		return nil
+	}
+	return res.(M)
+}
+
 // @author cxhttp
 // @lastUpdate 2019-08-04
 // @comment 字符串转uint32

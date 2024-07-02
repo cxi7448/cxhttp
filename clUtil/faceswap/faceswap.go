@@ -11,7 +11,7 @@ src: 原图
 face: 脸图
 _type: API分类
 */
-func Faceswap(src, face Img, _type ...string) (string, error) {
+func Faceswap(src, face Img, _type ...string) (string, string, error) {
 	clLog.Info("收到转换信息")
 	clLog.Info("src:%+v", src)
 	clLog.Info("face:%+v", face)
@@ -23,7 +23,7 @@ func Faceswap(src, face Img, _type ...string) (string, error) {
 	case TYPE_AKOOL:
 		return akool.FaceSwap(src, face)
 	default:
-		return "", fmt.Errorf("未知API")
+		return "", "", fmt.Errorf("未知API")
 	}
 }
 
@@ -31,7 +31,7 @@ func Faceswap(src, face Img, _type ...string) (string, error) {
 *
 视频转换
 */
-func FaceswapVideo(src, face []Img, video_url string, _type ...string) (string, error) {
+func FaceswapVideo(src, face []Img, video_url string, _type ...string) (string, string, error) {
 	clLog.Info("收到转换信息")
 	clLog.Info("src:%+v", src)
 	clLog.Info("face:%+v", face)
@@ -44,7 +44,7 @@ func FaceswapVideo(src, face []Img, video_url string, _type ...string) (string, 
 	case TYPE_AKOOL:
 		return akool.FaceSwapVideo(src, face, video_url)
 	default:
-		return "", fmt.Errorf("未知API")
+		return "", "", fmt.Errorf("未知API")
 	}
 }
 
@@ -84,5 +84,22 @@ func GenDetectVideo(src, frame_time string, _type ...string) (string, error) {
 		return akool.DetectVideo(src, frame_time)
 	default:
 		return "", fmt.Errorf("未知API")
+	}
+}
+
+/*
+* // 0等待中  1成功 2失败
+ */
+func CheckResult(job_id string, _type ...string) (uint32, error) {
+	api_type := TYPE_AKOOL
+	if len(_type) > 0 {
+		api_type = _type[0]
+	}
+	clLog.Info("[%v]查询任务:%v", api_type, job_id)
+	switch api_type {
+	case TYPE_AKOOL:
+		return akool.CheckResult(job_id)
+	default:
+		return 0, fmt.Errorf("未知API")
 	}
 }

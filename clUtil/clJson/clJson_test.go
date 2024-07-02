@@ -6,15 +6,22 @@ import (
 )
 
 func TestCreateBy(t *testing.T) {
-	jsonstr := `{
-		"ac": "getSystemInfo"
-	}`
-	jsonObj := New([]byte(jsonstr))
-	if jsonObj == nil {
-		fmt.Printf("jsonObj解析错误!\n")
-		return
+	//jsonstr := `{
+	//	"ac": "getSystemInfo"
+	//}`
+	//jsonObj := New([]byte(jsonstr))
+	//if jsonObj == nil {
+	//	fmt.Printf("jsonObj解析错误!\n")
+	//	return
+	//}
+	//fmt.Printf(">> ac的值: %v\n", jsonObj.GetStr("ac"))
+	result := M{
+		"data": M{
+			"coce": 0,
+		},
 	}
-	fmt.Printf(">> ac的值: %v\n", jsonObj.GetStr("ac"))
+	data := result.GetMap("data")
+	fmt.Println(data)
 }
 
 func TestJsonStream_GetArray(t *testing.T) {
