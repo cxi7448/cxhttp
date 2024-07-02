@@ -167,7 +167,7 @@ func (this *Akool) CheckResult(id string) (uint32, error) {
 		Code uint32 `json:"code"`
 		Msg  string `json:"msg"`
 		Data struct {
-			Result struct {
+			Result []struct {
 				FaceswapStatus uint32 `json:"faceswap_status"`
 				Id             string `json:"_id"`
 				Url            string `json:"url"`
@@ -188,7 +188,7 @@ func (this *Akool) CheckResult(id string) (uint32, error) {
 		clLog.Error("错误:%v", result.Msg)
 		return 0, fmt.Errorf("错误内容:%v", result.Msg)
 	}
-	status := result.Data.Result.FaceswapStatus
+	status := result.Data.Result[0].FaceswapStatus
 	if status < 3 {
 		return 0, nil
 	}
