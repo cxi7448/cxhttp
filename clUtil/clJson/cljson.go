@@ -39,7 +39,7 @@ func (this *M) GetMap(key string) M {
 	if !ok {
 		return nil
 	}
-	return res.(M)
+	return res.(map[string]interface{})
 }
 
 // @author cxhttp
