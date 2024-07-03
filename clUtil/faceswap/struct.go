@@ -5,8 +5,10 @@ const (
 )
 
 type Api interface {
-	FaceSwap(src, face Img) error
-	Video()
+	FaceSwap(src, face Img) (string, string, error)
+	FaceSwapVideo(src, face []Img, video_url string) (string, string, error)
+	CheckResult(id string) (uint32, error)
+	Ty()
 }
 
 type Img struct {

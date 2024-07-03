@@ -1,13 +1,18 @@
 package xhttp
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -24,6 +29,7 @@ type HttpClient struct {
 	cookieGet   func(this *HttpClient) clJson.M
 	skipHttps   bool   // 是否跳过证书检测
 	ContentType string // 请求方法
+	boundary    string
 }
 
 func New(url string) *HttpClient {
@@ -34,9 +40,15 @@ func New(url string) *HttpClient {
 		Headers: map[string]string{
 			"Content-Type": "application-json",
 		},
-		cookies: clJson.M{},
+		cookies:  clJson.M{},
+		boundary: "---011000010111000001101001",
 	}
 	return httpClient
+}
+
+func (this *HttpClient) SetBoundary(boundary string) *HttpClient {
+	this.boundary = boundary
+	return this
 }
 
 func (this *HttpClient) SetSkipHttps(skipHttps bool) *HttpClient {
@@ -66,6 +78,64 @@ func (this *HttpClient) Post(data interface{}, result interface{}) error {
 	this.Param = data
 	return this.do(result)
 }
+
+func (this *HttpClient) PostForm(fieldname, filename string, data map[string]string, result interface{}) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		clLog.Error("PostForm os.Open失败:%v", err)
+		return err
+	}
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	writer.SetBoundary(this.boundary)
+	part, err := writer.CreateFormFile(fieldname, filepath.Base(file.Name()))
+	if err != nil {
+		clLog.Error("PostForm writer.CreateFormFile失败:%v", err)
+		return err
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		clLog.Error("PostForm io.Copy失败:%v", err)
+		return err
+	}
+	if len(data) > 0 {
+		for key, value := range data {
+			err = writer.WriteField(key, value)
+			if err != nil {
+				clLog.Error("PostForm writer.WriteField失败:%v", err)
+				return err
+			}
+		}
+	}
+	writer.Close()
+	req, _ := http.NewRequest("POST", this.URL, body)
+	this.request = req
+	this.request.Header.Add("accept", "application/json")
+	this.request.Header.Add("content-type", fmt.Sprintf("multipart/form-data;boundary=%v", this.boundary))
+	this.Headers["Content-Type"] = fmt.Sprintf("multipart/form-data;boundary=%v", this.boundary)
+	if len(this.Headers) > 0 {
+		for key, value := range this.Headers {
+			this.request.Header.Set(key, value)
+		}
+	}
+	resp, _ := http.DefaultClient.Do(this.request)
+	defer resp.Body.Close()
+	resp_body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		clLog.Error("ioutil.ReadAll失败:[%v]", err)
+		return err
+	}
+	this.respone = resp
+	this.body = resp_body
+	err = json.Unmarshal(resp_body, result)
+	if err != nil {
+		clLog.Error("Unmarshal失败:[%v]", err)
+		clLog.Error("Unmarshal失败:[%v]", string(resp_body))
+		return err
+	}
+	return nil
+}
+
 func (this *HttpClient) do(result interface{}) error {
 	var reqBody *strings.Reader
 	if this.Param != nil {
