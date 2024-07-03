@@ -18,7 +18,7 @@ func InitClothOff(api_key, webhook string) {
 	clothOff.api_key = api_key
 	clothOff.webhook = webhook
 }
-func (this *ClothOff) Ty(filename, order string) error {
+func (this *ClothOff) Undress(filename, order string) error {
 	xhr := xhttp.New("https://public-api.clothoff.io/undress")
 	param := map[string]string{
 		"type_gen":    "img2clo",

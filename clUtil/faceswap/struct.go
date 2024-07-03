@@ -1,7 +1,8 @@
 package faceswap
 
 const (
-	TYPE_AKOOL = "akool" // https://docs.akool.io/ai-tools-suite/faceswap
+	TYPE_AKOOL    = "akool" // https://docs.akool.io/ai-tools-suite/faceswap
+	TYPE_CLOTHFOO = "akool" // https://clothoff.readme.io/reference/image_generation
 )
 
 type Api interface {

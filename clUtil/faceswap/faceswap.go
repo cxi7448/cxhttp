@@ -103,3 +103,17 @@ func CheckResult(job_id string, _type ...string) (uint32, error) {
 		return 0, fmt.Errorf("未知API")
 	}
 }
+
+func Undress(image, order string, _type ...string) error {
+	api_type := TYPE_CLOTHFOO
+	if len(_type) > 0 {
+		api_type = _type[0]
+	}
+	clLog.Info("[%v]脱衣任务:%v", image, order)
+	switch api_type {
+	case TYPE_CLOTHFOO:
+		return clothOff.Undress(image, order)
+	default:
+		return fmt.Errorf("未知API")
+	}
+}
