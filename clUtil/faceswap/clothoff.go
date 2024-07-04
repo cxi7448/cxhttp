@@ -1,6 +1,7 @@
 package faceswap
 
 import (
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/clUtil/xhttp"
 )
@@ -29,12 +30,7 @@ func (this *ClothOff) Undress(filename, order string) error {
 		"body_type":   "normal",
 		"butt_size":   "normal",
 	}
-	result := struct {
-		ApiBalance float64 `json:"api_balance"`
-		IdGen      string  `json:"id_gen"`
-		QueueNum   string  `json:"queue_num"`
-		QueueTime  float64 `json:"queue_time"`
-	}{}
+	result := clJson.M{}
 	xhr.SetHeaders(map[string]string{
 		"x-api-key": this.api_key,
 		"accept":    "application/json",
