@@ -27,6 +27,8 @@ func main() {
 		buildRule()
 	case "api":
 		buildApi()
+	case "vue":
+		buildVue()
 	default:
 		fmt.Println(desc)
 	}
@@ -72,6 +74,25 @@ const desc = `使用帮助
 		CallBack: controller.ApiUserLogin,
 	})
 `
+
+// 自动生成Index.vue
+func buildVue() {
+	if len(os.Args) < 3 {
+		fmt.Println("请输入表名")
+		return
+	}
+	table := os.Args[2]
+	path := ""
+	if len(os.Args) > 3 {
+		path = os.Args[3]
+	}
+	err := xbuild.BuildView(table, path)
+	if err != nil {
+		fmt.Println("生成错误:", err)
+	} else {
+		fmt.Println("生成完毕")
+	}
+}
 
 // 自动生成CURD
 func buildApi() {
