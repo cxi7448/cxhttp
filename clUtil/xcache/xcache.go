@@ -78,6 +78,24 @@ func Set(key string, value interface{}, expire int64) {
 	}
 }
 
+func Del(key string) {
+	index := getSliceKey(key)
+	sLocker.RLock()
+	c := cachePools[index]
+	sLocker.RUnlock()
+	if c != nil {
+		c.locker.Lock()
+		defer c.locker.Unlock()
+		c.Del(key)
+	}
+}
+
+func (this *CacheList) Del(key string) {
+	this.locker.Lock()
+	defer this.locker.Unlock()
+	delete(this.Data, key)
+}
+
 func (this *CacheList) clearCache() {
 	this.locker.Lock()
 	defer this.locker.Unlock()
