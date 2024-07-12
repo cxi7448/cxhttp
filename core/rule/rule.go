@@ -269,7 +269,6 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 			paramsKeys = append(paramsKeys, val)
 		}
 	}
-	clLog.Info("缓存的paramsKey:%v", paramsKeys)
 	// 如果回调函数不存在
 	if ruleinfo.CallBack == nil {
 		if ruleinfo.RespContent != "" {
