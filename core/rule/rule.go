@@ -252,21 +252,6 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 				}
 			}
 			newParam.Add(pinfo.Name, value)
-			// 判断是否有需要自定义参与计算cacheKey的配置
-			if len(ruleinfo.CacheKeyParam) > 0 {
-				isExists := false // 判断当前key的名字是否在配置中
-				for _, val := range ruleinfo.CacheKeyParam {
-					if val == pinfo.Name {
-						isExists = true
-						break
-					}
-				}
-				if isExists {
-					paramsKeys = append(paramsKeys, value)
-				}
-			} else {
-				paramsKeys = append(paramsKeys, value)
-			}
 		}
 	} else {
 		// 如果路由配置上参数列表为nil，那么就不过滤参数，所有参数都接收
@@ -274,7 +259,17 @@ func CallRule(rq *http.Request, rw *http.ResponseWriter, _uri string, _param *Ht
 			newParam.Add(key, val)
 		}
 	}
-
+	// 判断是否有需要自定义参与计算cacheKey的配置
+	if len(ruleinfo.CacheKeyParam) > 0 {
+		for _, val := range ruleinfo.CacheKeyParam {
+			paramsKeys = append(paramsKeys, _param.GetStr(val, ""))
+		}
+	} else {
+		for _, val := range _param.values {
+			paramsKeys = append(paramsKeys, val)
+		}
+	}
+	clLog.Info("缓存的paramsKey:%v", paramsKeys)
 	// 如果回调函数不存在
 	if ruleinfo.CallBack == nil {
 		if ruleinfo.RespContent != "" {
