@@ -292,6 +292,67 @@ func (this *DBPointer) Exec(sqlstr string, args ...interface{}) (int64, error) {
 }
 
 /**
+ * 数据库执行语句
+ * @param sqlstr sql语句
+ * @param args sql参数
+ */
+func (this *DBPointer) ExecPrepare(timeout uint32, sqlstr string, args ...interface{}) (int64, error) {
+
+	lastSql := sqlstr
+	if args != nil && len(args) != 0 {
+		lastSql = fmt.Sprintf(sqlstr, args...)
+	}
+	if lastSql == "" {
+		return 0, errors.New("SQL语句为空")
+	}
+
+	this.lastSql = lastSql
+	if this.conn == nil {
+		this.lastErr = "错误: SQL连线指针为空"
+		return 0, errors.New("错误: SQL连线指针为nil pointer")
+	}
+	if timeout == 0 {
+		stmt, err := this.conn.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		res, err := stmt.Exec(args...)
+		if err != nil {
+			this.lastErr = fmt.Sprintf("执行失败! ERR:%v", err)
+			this.lastSql = fmt.Sprintf(sqlstr, args...)
+			return 0, err
+		}
+
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	} else {
+		stmt, err := this.conn.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		c := context.Background()
+		if timeout > 0 {
+			c, _ = context.WithTimeout(c, time.Duration(timeout)*time.Second)
+		}
+		res, err := stmt.ExecContext(c, args...)
+		if err != nil {
+			this.lastErr = fmt.Sprintf("执行失败! ERR:%v", err)
+			this.lastSql = fmt.Sprintf(sqlstr, args...)
+			return 0, err
+		}
+
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	}
+}
+
+/**
  * 数据库执行语句带超时
  * @param timeout 超时时间
  * @param sqlstr sql语句

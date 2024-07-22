@@ -86,7 +86,11 @@ func buildVue() {
 	if len(os.Args) > 3 {
 		path = os.Args[3]
 	}
-	err := xbuild.BuildView(table, path)
+	lang := ""
+	if len(os.Args) > 4 {
+		lang = os.Args[4]
+	}
+	err := xbuild.BuildView(table, path, lang)
 	if err != nil {
 		fmt.Println("生成错误:", err)
 	} else {
@@ -103,13 +107,17 @@ func buildApi() {
 	table := os.Args[2]
 	controller := ""
 	model := ""
+	router := ""
 	if len(os.Args) > 3 {
 		controller = os.Args[3]
 	}
 	if len(os.Args) > 4 {
 		model = os.Args[4]
 	}
-	err := xbuild.BuildCURD(table, controller, model)
+	if len(os.Args) > 5 {
+		router = os.Args[5]
+	}
+	err := xbuild.BuildCURD(table, controller, model, router)
 	if err != nil {
 		fmt.Println("生成错误:", err)
 	} else {

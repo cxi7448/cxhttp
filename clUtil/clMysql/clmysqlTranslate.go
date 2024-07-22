@@ -72,6 +72,29 @@ func (this *ClTranslate) QueryWithTimeout(timeout uint32, sqlstr string, args ..
 }
 
 // 执行事务
+func (this *ClTranslate) ExecPrepare(timeout uint32, sqlstr string, args ...interface{}) (int64, error) {
+
+	if this.tx == nil {
+		return 0, errors.New("错误: 事务指针为 nil pointer")
+	}
+
+	if args != nil && len(args) != 0 {
+		sqlstr = fmt.Sprintf(sqlstr, args...)
+	}
+
+	res, err := this.tx.Exec(sqlstr)
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("%v, SQL:%v", err, sqlstr))
+	}
+
+	if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+		return res.LastInsertId()
+	}
+
+	return res.RowsAffected()
+}
+
+// 执行事务
 func (this *ClTranslate) Exec(sqlstr string, args ...interface{}) (int64, error) {
 
 	if this.tx == nil {

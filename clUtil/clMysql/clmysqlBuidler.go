@@ -669,6 +669,41 @@ func (this *SqlBuider) Replace(data map[string]interface{}) (int64, error) {
 /*
 *
 
+	添加语句
+	@param data map[string] string 需要添加的字段列表
+	@return 最后一条添加的id
+*/
+func (this *SqlBuider) ReplaceNew(data map[string]interface{}) (int64, error) {
+
+	if this.tablename == "" {
+		return 0, errors.New("EMPTY TABLE NAME")
+	}
+
+	fieldstr := strings.Builder{}
+	valuestr := strings.Builder{}
+	valueArgs := []interface{}{}
+	for key, val := range data {
+		if fieldstr.Len() > 0 {
+			valuestr.WriteString(",")
+			fieldstr.WriteString(",")
+		}
+		fieldstr.WriteString(fmt.Sprintf("`%v`", key))
+		valuestr.WriteString("?")
+		valueArgs = append(valueArgs, val)
+	}
+
+	if fieldstr.Len() == 0 {
+		return 0, errors.New("EMPTY UPDATE COLUMN LIST")
+	}
+	sqlStr := fmt.Sprintf("REPLACE INTO %v (%v) VALUES(%v)", this.tablename, fieldstr.String(), valuestr.String())
+	this.finalSql = sqlStr
+	resp, err := this.ExecPrepare(sqlStr, valueArgs...)
+	return resp, err
+}
+
+/*
+*
+
 	事务添加语句
 	@param data map[string] string 需要添加的字段列表
 	@return 最后一条添加的id
@@ -1202,6 +1237,20 @@ func (this *SqlBuider) buildQuerySql() (string, error) {
 		FinallySql = fmt.Sprintf("SELECT %v FROM ( %v ) temp %v", this.fieldStr, FinallySql, extraSql)
 	}
 	return FinallySql, nil
+}
+
+func (this *SqlBuider) ExecPrepare(sqlStr string, args ...interface{}) (int64, error) {
+	var resp int64
+	var err error
+	switch this.dbType {
+	case 1: // Picker
+		resp, err = this.dbPointer.ExecPrepare(this.timeout, sqlStr, args...)
+	case 2: // 事务
+		resp, err = this.dbTx.ExecPrepare(this.timeout, sqlStr, args...)
+	default:
+		err = errors.New("unknown mysql mode")
+	}
+	return resp, err
 }
 
 // 标准执行

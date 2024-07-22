@@ -6,10 +6,11 @@ import (
 	"os"
 )
 
-func BuildView(table, path string) error {
+func BuildView(table, path, lang string) error {
 	if path == "" {
 		path = "src/views"
 	}
+	islang := lang == "1"
 	info := GenTable(table)
 	if info == nil {
 		return fmt.Errorf("生成表格数据失败!")
@@ -17,6 +18,7 @@ func BuildView(table, path string) error {
 	js_script := fmt.Sprintf(`<script setup lang="ts">
 import { getCurrentInstance, onMounted} from 'vue'
 import {ElMessage} from "element-plus";
+%v
 const search:any = ref({})
 const proxy = getCurrentInstance()?.proxy
 const tableData:any = ref([])
@@ -103,13 +105,17 @@ const pager:any = ref({
   total:0
 })
 </script>
-`, info.Name, info.GetFormStr(), info.GetFormStr(), info.Name, info.Name, info.Name)
+`, info.GenScript(islang), info.Name, info.GetFormStr(islang), info.GetFormStr(islang), info.Name, info.Name, info.Name)
 	html_template := fmt.Sprintf(`
 <template>
   <div class="search_box">
     <el-button @click="getList">查询</el-button>
 	<el-button @click="showDialog()">添加</el-button>
-	<el-button v-if="selectRows.length > 0" @click="onDeleteMulti()" Icon="Delete">删除</el-button>
+	<el-popconfirm v-if="selectRows.length > 0" title="确认删除?" @confirm="onDeleteMulti()">
+      <template #reference>
+        <el-button type="danger" icon="Delete">批量删除</el-button>
+      </template>
+    </el-popconfirm>
   </div>
   <el-table @selectionChange="selectChange" :data="tableData" :header-cell-style="{ background: '#F7F8FA' }">
 	<el-table-column type="selection" width="55" />
@@ -118,22 +124,26 @@ const pager:any = ref({
       <template #default="scope">
         <el-button-group>
           <el-button type="primary" @click="showDialog(scope.row)" icon="Edit"></el-button>
-          <el-button type="danger" @click="onDelete(scope.row.id)" icon="Delete"></el-button>
+			<el-popconfirm title="确认删除?" @confirm="onDelete(scope.row.id)">
+            <template #reference>
+              <el-button type="danger" icon="Delete"></el-button>
+            </template>
+          </el-popconfirm>
         </el-button-group>
       </template>
     </el-table-column>
   </el-table>
   <Pager :pager="pager" @query="getList"></Pager>
 
-  <el-dialog v-model="dialogPop" width="600px" :title="dialogTitle">
-    <el-form>
+  <el-dialog v-model="dialogPop" width="700px" :title="dialogTitle">
+    <el-form label-width="100px">
       %v
-      <el-form-item label="" label-width="80px"><el-button @click="onSubmit">提交</el-button><el-button @click="dialogPop = false">取消</el-button></el-form-item>
+      <el-form-item label="" ><el-button @click="onSubmit">提交</el-button><el-button @click="dialogPop = false">取消</el-button></el-form-item>
     </el-form>
   </el-dialog>
 
 </template>
-`, info.ElTableColumn(), info.ElFormItem())
+`, info.ElTableColumn(), info.ElFormItem(islang))
 	var content = fmt.Sprintf("%v \n %v ", js_script, html_template)
 	folder := fmt.Sprintf("%v/%v", path, info.Name)
 	os.MkdirAll(folder, 0700)
