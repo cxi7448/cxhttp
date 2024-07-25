@@ -350,3 +350,8 @@ func Base64ToImageContent(base64_str string) ([]byte, error) {
 	index := strings.Index(base64_str, ";base64,")
 	return base64.StdEncoding.DecodeString(base64_str[index+8:])
 }
+
+func StrToUnicode(str string) (string, error) {
+	str, err := strconv.Unquote(strings.Replace(strconv.Quote(str), `\\u`, `\u`, -1))
+	return str, err
+}
