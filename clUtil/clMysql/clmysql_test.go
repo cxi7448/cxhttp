@@ -2,9 +2,9 @@ package clMysql
 
 import (
 	"fmt"
-	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"reflect"
 	"testing"
+	"time"
 )
 
 type T struct {
@@ -28,91 +28,35 @@ func ListV2(rows interface{}) {
 	List(rows)
 }
 
-func TestGetInsertSql(t *testing.T) {
-	rows := []T{
-		{},
-		{},
-	}
-	ListV2(&rows)
-	//List(&rows)
-}
-
-func TestAddMaster(t *testing.T) {
-
-	db := NewDBSimple("127.0.0.1", "root", "root", "miner_new")
-	if db == nil {
-		fmt.Printf("connect to mysql failed\n")
-		return
-	}
-
-	tableList, err := db.GetTables("")
-	if err != nil {
-		clLog.Error("获取数据库表格错误: %v", err)
-		return
-	}
-	for _, table := range tableList {
-		clLog.Debug("表格: %v", table)
-		columnList, err := db.GetTableColumns(table)
-		if err != nil {
-			clLog.Error("获取表格字段数据错误: %v", err)
-			continue
-		}
-		clLog.Debug("表格: %v 字段数据: %+v", table, columnList)
-	}
-
-	clLog.Debug("生成完毕!")
-}
-
-type AddObjData struct {
-	A uint32  `db:"a" primary:"TRUE"`
-	B uint32  `db:"b"`
-	C float64 `db:"c"`
-}
-
 func TestSqlBuider_AddMulti(t *testing.T) {
 
-	db := NewDBSimple("127.0.0.1", "root", "root", "miner_new")
+	db := NewDBSimple("127.0.0.1:3306", "root", "root", "videos")
 	if db == nil {
 		fmt.Printf("connect to mysql failed\n")
 		return
 	}
-	var data AddObjData
-	data.A = 100
-	data.B = 3
-	data.C = 2292929.988778
-
-	db.NewBuilder().Table("test").AddObj(data, true)
+	var data = []interface{}{}
+	data = append(data, AddObjMultiObj{
+		I:     1,
+		Extra: `{"name":"xx","i":1,"data":[0,1,2]}`,
+		M:     "我日啊",
+		A:     time.Now().Unix(),
+	})
+	data = append(data, AddObjMultiObj{
+		I:     2,
+		Extra: `{"name":"yyyy","i":2,"data":[3,4,5]}`,
+		M:     "你没的",
+		A:     time.Now().Unix(),
+	})
+	_, err := db.NewBuilder().Table("test").OnDuplicateKey([]string{"addtime"}).AddObjMulti(data, true)
+	fmt.Println(err)
 
 }
 
 type AddObjMultiObj struct {
-	A uint32 `db:"a" primary:"TRUE"`
-	B uint32 `db:"b"`
-	C uint32 `db:"c"`
-}
-
-func TestSqlBuider_AddObjMulti(t *testing.T) {
-	db := NewDBSimple("127.0.0.1", "root", "root", "miner_new")
-	if db == nil {
-		fmt.Printf("connect to mysql failed\n")
-		return
-	}
-	db.NewBuilder().Table("test").AddObjMulti([]interface{}{
-		AddObjMultiObj{
-			A: 1,
-			B: 2,
-			C: 3,
-		},
-		AddObjMultiObj{
-			A: 1,
-			B: 2,
-			C: 3,
-		},
-		AddObjMultiObj{
-			A: 1,
-			B: 2,
-			C: 3,
-		},
-	}, true)
-
+	Id    uint32 `db:"id" primary:"TRUE"`
+	I     uint32 `db:"i"`
+	Extra string `db:"extra"`
+	M     string `db:"m"`
+	A     int64  `db:"addtime"`
 }

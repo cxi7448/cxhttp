@@ -184,6 +184,52 @@ func GetInsertSqlMulti(_dataList []interface{}, _primary bool) ([]string, []stri
 }
 
 // 根据数据结构取得字段列表
+func GetInsertSqlMultiNew(_dataList []interface{}, _primary bool) ([]string, []string, []interface{}) {
+
+	_fields := make([]string, 0)
+	_prepares := make([]string, 0)
+	_valueList := make([]interface{}, 0)
+
+	for k, _val := range _dataList {
+
+		_type := reflect.TypeOf(_val)
+		_value := reflect.ValueOf(_val)
+		tmp_prepare := []string{}
+		//_values := make([]string, 0)
+		for i := 0; i < _type.NumField(); i++ {
+
+			if _type.Field(i).Name[0] >= 97 {
+				continue // 小写的过滤掉
+			}
+
+			if !_primary {
+				if strings.ToUpper(_type.Field(i).Tag.Get("primary")) == "TRUE" {
+					continue
+				}
+			}
+
+			if _type.Field(i).Tag.Get("db") == "" {
+				continue
+			}
+
+			if k == 0 {
+				_fields = append(_fields, _type.Field(i).Tag.Get("db"))
+			}
+			if strings.HasPrefix(_value.Field(i).Type().String(), "float") {
+				_valueList = append(_valueList, fmt.Sprintf("%f", _value.Field(i).Float()))
+			} else {
+				_valueList = append(_valueList, fmt.Sprintf("%v", _value.Field(i).Interface()))
+			}
+			tmp_prepare = append(tmp_prepare, "?")
+
+		}
+		_prepares = append(_prepares, fmt.Sprintf("(%v)", strings.Join(tmp_prepare, ",")))
+	}
+
+	return _fields, _prepares, _valueList
+}
+
+// 根据数据结构取得字段列表
 func GetUpdateSql(_val interface{}, _primary bool) []string {
 
 	_fields := make([]string, 0)

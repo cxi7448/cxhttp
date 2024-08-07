@@ -1126,8 +1126,7 @@ func (this *SqlBuider) AddObj(_resp interface{}, _include_primary bool) (int64, 
 // 获取查找
 func (this *SqlBuider) AddObjMulti(_resp []interface{}, _includePrimary bool) (int64, error) {
 
-	fieldList, valuesList := GetInsertSqlMulti(_resp, _includePrimary)
-
+	fieldList, prepareList, valuesList := GetInsertSqlMultiNew(_resp, _includePrimary)
 	// 拼接重复区
 	onDuplicateStr := strings.Builder{}
 	if this.duplicateKey != nil && len(this.duplicateKey) > 0 {
@@ -1140,15 +1139,15 @@ func (this *SqlBuider) AddObjMulti(_resp []interface{}, _includePrimary bool) (i
 			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
 		}
 	}
-
 	this.finalSql = fmt.Sprintf("INSERT INTO `%v`.`%v` (`%v`) VALUES %v %v",
 		this.dbname,
 		this.tablename,
 		strings.Join(fieldList, "`,`"),
-		strings.Join(valuesList, ","),
+		strings.Join(prepareList, ","),
 		onDuplicateStr.String())
 
-	resp, err := this.ExecCustom(this.finalSql)
+	//resp, err := this.ExecCustom(this.finalSql)
+	resp, err := this.ExecPrepare(this.finalSql, valuesList...)
 	return resp, err
 }
 
