@@ -38,17 +38,17 @@ func TestSqlBuider_AddMulti(t *testing.T) {
 	var data = []interface{}{}
 	data = append(data, AddObjMultiObj{
 		I:     1,
-		Extra: `{"name":"xx","i":1,"data":[0,1,2]}`,
+		Extra: `{"_id":"33fcb092e322d3fff21dd509","username":"z49e46","gameName":"MONKEYKING","gameId":"MONKEYKING","product":"AMBSLOT","roundId":"PVbP1bcVrBSAU7Qe","categories":"slot","winlose":-27,"turnover":30,"bet":30,"timestamp":"06-08-2024 16:30:55","isEndRound":true,"isFreespin":false,"isBuyFeature":false,"isGamble":false}`,
 		M:     "我日啊",
 		A:     time.Now().Unix(),
 	})
 	data = append(data, AddObjMultiObj{
 		I:     2,
-		Extra: `{"name":"yyyy","i":2,"data":[3,4,5]}`,
+		Extra: `{"_id":"33fcb092e322d3fff21dd509","username":"z49e46","gameName":"MONKEYKING","gameId":"MONKEYKING","product":"AMBSLOT","roundId":"PVbP1bcVrBSAU7Qe","categories":"slot","winlose":-27,"turnover":30,"bet":30,"timestamp":"06-08-2024 16:30:55","isEndRound":true,"isFreespin":false,"isBuyFeature":false,"isGamble":false}`,
 		M:     "你没的",
 		A:     time.Now().Unix(),
 	})
-	_, err := db.NewBuilder().Table("test").OnDuplicateKey([]string{"addtime"}).AddObjMulti(data, true)
+	_, err := db.NewBuilder().Table("test").OnDuplicateKey([]string{"extra"}).AddObjMulti(data, true)
 	fmt.Println(err)
 
 }

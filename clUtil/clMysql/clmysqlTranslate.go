@@ -72,26 +72,111 @@ func (this *ClTranslate) QueryWithTimeout(timeout uint32, sqlstr string, args ..
 }
 
 // 执行事务
-func (this *ClTranslate) ExecPrepare(timeout uint32, sqlstr string, args ...interface{}) (int64, error) {
 
-	if this.tx == nil {
-		return 0, errors.New("错误: 事务指针为 nil pointer")
-	}
+/*
+*
+lastSql := sqlstr
 
 	if args != nil && len(args) != 0 {
-		sqlstr = fmt.Sprintf(sqlstr, args...)
+		lastSql = fmt.Sprintf(sqlstr, args...)
+	}
+	if lastSql == "" {
+		return 0, errors.New("SQL语句为空")
 	}
 
-	res, err := this.tx.Exec(sqlstr)
-	if err != nil {
-		return 0, errors.New(fmt.Sprintf("%v, SQL:%v", err, sqlstr))
+	this.lastSql = lastSql
+	if this.conn == nil {
+		this.lastErr = "错误: SQL连线指针为空"
+		return 0, errors.New("错误: SQL连线指针为nil pointer")
+	}
+	if timeout == 0 {
+		stmt, err := this.conn.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		res, err := stmt.Exec(args...)
+		if err != nil {
+			this.lastErr = fmt.Sprintf("执行失败! ERR:%v", err)
+			this.lastSql = fmt.Sprintf(sqlstr, args...)
+			return 0, err
+		}
+
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	} else {
+		stmt, err := this.conn.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		c := context.Background()
+		if timeout > 0 {
+			c, _ = context.WithTimeout(c, time.Duration(timeout)*time.Second)
+		}
+		res, err := stmt.ExecContext(c, args...)
+		if err != nil {
+			this.lastErr = fmt.Sprintf("执行失败! ERR:%v", err)
+			this.lastSql = fmt.Sprintf(sqlstr, args...)
+			return 0, err
+		}
+
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	}
+*/
+func (this *ClTranslate) ExecPrepare(timeout uint32, sqlstr string, args ...interface{}) (int64, error) {
+
+	lastSql := sqlstr
+	if args != nil && len(args) != 0 {
+		lastSql = fmt.Sprintf(sqlstr, args...)
+	}
+	if lastSql == "" {
+		return 0, errors.New("SQL语句为空")
 	}
 
-	if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
-		return res.LastInsertId()
+	if this.tx == nil {
+		return 0, errors.New("错误: SQL连线指针为nil pointer")
 	}
+	if timeout == 0 {
+		stmt, err := this.tx.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		res, err := stmt.Exec(args...)
+		if err != nil {
+			return 0, err
+		}
 
-	return res.RowsAffected()
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	} else {
+		stmt, err := this.tx.Prepare(sqlstr)
+		if err != nil {
+			return 0, err
+		}
+		c := context.Background()
+		if timeout > 0 {
+			c, _ = context.WithTimeout(c, time.Duration(timeout)*time.Second)
+		}
+		res, err := stmt.ExecContext(c, args...)
+		if err != nil {
+			return 0, err
+		}
+
+		if strings.HasPrefix(strings.ToLower(sqlstr), "insert") {
+			return res.LastInsertId()
+		}
+
+		return res.RowsAffected()
+	}
 }
 
 // 执行事务

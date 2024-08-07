@@ -1145,7 +1145,6 @@ func (this *SqlBuider) AddObjMulti(_resp []interface{}, _includePrimary bool) (i
 		strings.Join(fieldList, "`,`"),
 		strings.Join(prepareList, ","),
 		onDuplicateStr.String())
-
 	//resp, err := this.ExecCustom(this.finalSql)
 	resp, err := this.ExecPrepare(this.finalSql, valuesList...)
 	return resp, err
