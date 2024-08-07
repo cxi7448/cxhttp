@@ -119,6 +119,7 @@ rule.AddRule(rule.Rule{
 		},
 		CallBack: %v.Api%vList,
 		Method:   "POST",
+		Login:true,
 	})
 
 `, table, table, modelName)
@@ -146,6 +147,7 @@ rule.AddRule(rule.Rule{
 		},
 		CallBack: %v.Api%vAdd,
 		Method:   "POST",
+		Login:true,
 	})
 
 `, table, table, modelName)
@@ -172,6 +174,7 @@ rule.AddRule(rule.Rule{
 		Params: []rule.ParamInfo{
 		},
 		CallBack: %v.Api%vEdit,
+		Login:true,
 		Method:   "POST",
 	})
 
@@ -201,6 +204,7 @@ rule.AddRule(rule.Rule{
 		},
 		CallBack: %v.Api%vDel,
 		Method:   "POST",
+		Login:true,
 	})
 
 `, table, table, modelName)
