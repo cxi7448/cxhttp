@@ -8,6 +8,7 @@ import (
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/core/rule"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -65,9 +66,12 @@ func StartServer(_listenPort uint32) {
 }
 
 var uploadFileSizeLimit int64 = 1024 * 1024 * 300
-
+var postBodySize int64 = 1024 * 1024 * 1 // 1M
 func SetUploadFileSizeLimit(_limit int64) {
 	uploadFileSizeLimit = _limit
+}
+func SetBodySize(_limit int64) {
+	postBodySize = _limit
 }
 
 type accessContrlAllow struct {
@@ -162,21 +166,18 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 
 	var rawData = ""
 	if strings.Contains(contentType, "text/json") || strings.Contains(contentType, "application/json") {
-		var jsonBytes = make([]byte, 10*1024)
-
-		n, err := rq.Body.Read(jsonBytes)
+		jsonStr, err := ioutil.ReadAll(rq.Body)
 		if err != nil && err.Error() != "EOF" {
 			clLog.Error("读取json参数失败! 错误:%v", err)
 			rw.WriteHeader(502)
 			return
 		}
-		var jsonStr = jsonBytes[:n]
 		if isEncrypt {
 			jsonStr = []byte(clCrypt.AesCBCDecode(jsonStr, []byte(mAesKey), []byte(iv)))
 			clLog.Debug("请求body: %+v", string(jsonStr))
 		}
 		if jsonStr == nil || len(jsonStr) == 0 {
-			clLog.Error("数据: %v 结构化失败! 加密:%v 长度:%v", string(jsonStr), isEncrypt, n)
+			clLog.Error("数据: %v 结构化失败! 加密:%v 长度:%v", string(jsonStr), isEncrypt, len(jsonStr))
 			rw.WriteHeader(502)
 			return
 		}
@@ -189,7 +190,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 				}
 			}
 		}
-		rawData = string(jsonBytes[:n])
+		rawData = string(jsonStr)
 	} else if strings.Contains(contentType, "multipart/form-data") || strings.Contains(contentType, "application/x-www-form-urlencoded") {
 		rq.ParseForm()
 		if len(rq.Form) > 0 {
@@ -207,7 +208,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 			}
 		}
 	} else if strings.Contains(contentType, "text/xml") {
-		var xmlBytes = make([]byte, 4096)
+		var xmlBytes = make([]byte, postBodySize)
 		n, err := rq.Body.Read(xmlBytes)
 		if err != nil && err.Error() != "EOF" {
 			clLog.Error("读取json参数失败! 错误:%v", err)
@@ -228,7 +229,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		//	values[params[0]] = params[1]
 		//}
 	} else {
-		rq.ParseMultipartForm(2 << 32)
+		rq.ParseMultipartForm(uploadFileSizeLimit)
 		if nil != rq.MultipartForm && nil != rq.MultipartForm.Value {
 			for key, val := range rq.MultipartForm.Value {
 				if len(val) == 1 {
