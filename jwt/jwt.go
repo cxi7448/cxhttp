@@ -18,7 +18,8 @@ var (
 
 var SecretKey = []byte("32honefzr7vnbm0k")
 
-const JWT_PREFIX = "JWT_U_INFO_"
+// var JWT_PREFIX = "JWT_U_INFO_"
+var JWT_PREFIX = "JWT_U_INFO_"
 
 type UserInfo struct {
 	Uid       uint64            `json:"uid,omitempty"`   // 当前用户Id
@@ -30,6 +31,10 @@ type Claims struct {
 	jwt.StandardClaims
 	CreateTime  int64 `json:"ct,omitempty"` // 创建时间
 	ReflushTime int64 `json:"st,omitempty"` // 刷新时间
+}
+
+func SetPrefix(prefix string) {
+	JWT_PREFIX = "JWT_" + prefix + "_"
 }
 
 func (this Claims) SaveToRedis() {
