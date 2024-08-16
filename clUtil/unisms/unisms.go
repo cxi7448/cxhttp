@@ -148,7 +148,6 @@ func (m *UniSMS) Send(phone ...string) error {
 		clLog.Error("短信发送失败ID:[%v] MSG:[%v]", requestId, string(content))
 		return fmt.Errorf(resp.Message)
 	}
-	fmt.Println(string(content))
 	return nil
 }
 
