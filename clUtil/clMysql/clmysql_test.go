@@ -2,7 +2,7 @@ package clMysql
 
 import (
 	"fmt"
-	"reflect"
+	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"testing"
 	"time"
 )
@@ -12,22 +12,20 @@ type T struct {
 	Test uint32 `json:"test" db:"test"`
 }
 
-func List(rows interface{}) {
-	//t := reflect.ValueOf(rows)
-	//t := reflect.TypeOf(&rows)
-	//fmt.Printf("%+v \n", t.Elem())
-	_value := reflect.ValueOf(rows)
-	fmt.Println(_value.Elem().Len())
-	//fmt.Println(_value.Len())
-	//_valueE := _value.Elem()
-	//fmt.Println(_valueE)
-	//_valueE = _valueE.Slice(0, _valueE.Cap())
+func TestSqlBuilder_Save(t *testing.T) {
+	db := NewDBSimple("127.0.0.1:3306", "root", "root", "videos")
+	if db == nil {
+		fmt.Printf("connect to mysql failed\n")
+		return
+	}
+	_, err := db.NewBuilder().Table("test").Add(clJson.M{
+		"m":       "'测试保存';",
+		"i":       1,
+		"addtime": time.Now().Unix(),
+		"extra":   `{"a":1,"b":[1,2,3],"c":"xx","d":{"a":"ss"}}`,
+	})
+	fmt.Println(err)
 }
-
-func ListV2(rows interface{}) {
-	List(rows)
-}
-
 func TestSqlBuider_AddMulti(t *testing.T) {
 
 	db := NewDBSimple("127.0.0.1:3306", "root", "root", "videos")

@@ -416,11 +416,13 @@ func (this *SqlBuider) Save(data map[string]interface{}) (int64, error) {
 	}
 
 	fieldstr := ""
+	valueStr := []interface{}{}
 	for key, val := range data {
 		if fieldstr != "" {
 			fieldstr += ","
 		}
-		fieldstr += fmt.Sprintf("`%v` = '%v'", key, val)
+		fieldstr += fmt.Sprintf("`%v` = ?", key)
+		valueStr = append(valueStr, val)
 	}
 
 	if fieldstr == "" {
@@ -430,7 +432,8 @@ func (this *SqlBuider) Save(data map[string]interface{}) (int64, error) {
 	sqlStr := fmt.Sprintf("UPDATE %v SET %v WHERE %v", this.tablename, fieldstr, this.whereStr)
 	this.finalSql = sqlStr
 
-	var resp, err = this.ExecCustom(this.finalSql)
+	//var resp, err = this.ExecCustom(this.finalSql)
+	var resp, err = this.ExecPrepare(this.finalSql, valueStr...)
 	return resp, err
 }
 
@@ -529,19 +532,22 @@ func (this *SqlBuider) Add(data map[string]interface{}) (int64, error) {
 
 	// 拼接字段区和值字段区
 	fieldstr := strings.Builder{}
-	valuestr := strings.Builder{}
+	valuestr := []interface{}{}
+	prepareValue := strings.Builder{}
 	for key, val := range data {
-		if valuestr.Len() > 0 {
-			valuestr.WriteString(",")
+		if prepareValue.Len() > 0 {
+			prepareValue.WriteString(",")
 			fieldstr.WriteString(",")
 		}
 
 		fieldstr.WriteString(fmt.Sprintf("`%v`", key))
-		if key == "guid" || key == "uid" || key == "id" {
-			valuestr.WriteString(fmt.Sprintf("%v", val))
-		} else {
-			valuestr.WriteString(fmt.Sprintf("'%v'", val))
-		}
+		prepareValue.WriteString("?")
+		//if key == "guid" || key == "uid" || key == "id" {
+		//	valuestr.WriteString(fmt.Sprintf("%v", val))
+		//} else {
+		//	valuestr.WriteString(fmt.Sprintf("'%v'", val))
+		//}
+		valuestr = append(valuestr, val)
 	}
 
 	if fieldstr.Len() == 0 {
@@ -561,9 +567,9 @@ func (this *SqlBuider) Add(data map[string]interface{}) (int64, error) {
 		}
 	}
 
-	sqlStr := fmt.Sprintf("INSERT INTO %v (%v) VALUES(%v) %v", this.tablename, fieldstr.String(), valuestr.String(), onDuplicateStr.String())
+	sqlStr := fmt.Sprintf("INSERT INTO %v (%v) VALUES(%v) %v", this.tablename, fieldstr.String(), prepareValue.String(), onDuplicateStr.String())
 	this.finalSql = sqlStr
-	resp, err := this.ExecCustom(this.finalSql)
+	resp, err := this.ExecPrepare(this.finalSql, valuestr...)
 	return resp, err
 }
 
