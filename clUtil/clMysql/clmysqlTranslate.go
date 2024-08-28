@@ -147,6 +147,7 @@ func (this *ClTranslate) ExecPrepare(timeout uint32, sqlstr string, args ...inte
 		if err != nil {
 			return 0, err
 		}
+		defer stmt.Close()
 		res, err := stmt.Exec(args...)
 		if err != nil {
 			return 0, err
@@ -162,6 +163,7 @@ func (this *ClTranslate) ExecPrepare(timeout uint32, sqlstr string, args ...inte
 		if err != nil {
 			return 0, err
 		}
+		defer stmt.Close()
 		c := context.Background()
 		if timeout > 0 {
 			c, _ = context.WithTimeout(c, time.Duration(timeout)*time.Second)

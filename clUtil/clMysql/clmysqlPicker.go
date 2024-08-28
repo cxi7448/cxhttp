@@ -316,6 +316,7 @@ func (this *DBPointer) ExecPrepare(timeout uint32, sqlstr string, args ...interf
 		if err != nil {
 			return 0, err
 		}
+		defer stmt.Close()
 		res, err := stmt.Exec(args...)
 		if err != nil {
 			this.lastErr = fmt.Sprintf("执行失败! ERR:%v", err)
@@ -333,6 +334,7 @@ func (this *DBPointer) ExecPrepare(timeout uint32, sqlstr string, args ...interf
 		if err != nil {
 			return 0, err
 		}
+		defer stmt.Close()
 		c := context.Background()
 		if timeout > 0 {
 			c, _ = context.WithTimeout(c, time.Duration(timeout)*time.Second)
