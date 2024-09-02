@@ -37,6 +37,8 @@ func (this *GuoKe) Send(phone, content string) error {
 		clLog.Error("短信发送错误:%v", err)
 		return err
 	}
-	fmt.Printf("%+v\n", result)
+	if result.Uint32("code") != 0 {
+		return fmt.Errorf(result.Get("result"))
+	}
 	return nil
 }
