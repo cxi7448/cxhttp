@@ -50,7 +50,7 @@ type SqlBuider struct {
 	unionalls []string
 	unions    []string
 
-	duplicateKey []string
+	duplicateKey []deplicateObj
 
 	leftJoin  []sqlJoin
 	rightJoin []sqlJoin
@@ -58,6 +58,16 @@ type SqlBuider struct {
 	dbType    uint32
 	dbPointer *DBPointer
 	dbTx      *ClTranslate
+}
+
+const (
+	deplaitecate_TYPE_EQUAL = 0 // 0等值赋值
+	deplaitecate_TYPE_ADD   = 1 // 累加
+)
+
+type deplicateObj struct {
+	Field string // 字段
+	Type  int    // 0等值赋值  1累加
 }
 
 type MySqlColumns struct {
@@ -132,7 +142,7 @@ func (this *SqlBuider) Table(tablename string) *SqlBuider {
 	this.unions = make([]string, 0)
 	this.unionalls = make([]string, 0)
 
-	this.duplicateKey = make([]string, 0)
+	this.duplicateKey = make([]deplicateObj, 0)
 
 	return this
 }
@@ -179,7 +189,22 @@ func (this *SqlBuider) Where(wherestr string, args ...interface{}) *SqlBuider {
  * @param keys 要更新的字段名字列表
  */
 func (this *SqlBuider) OnDuplicateKey(keys []string) *SqlBuider {
-	this.duplicateKey = keys
+	for _, key := range keys {
+		this.duplicateKey = append(this.duplicateKey, deplicateObj{
+			Field: key,
+			Type:  deplaitecate_TYPE_EQUAL,
+		})
+	}
+	return this
+}
+
+func (this *SqlBuider) OnDuplicateKeyAdd(keys []string) *SqlBuider {
+	for _, key := range keys {
+		this.duplicateKey = append(this.duplicateKey, deplicateObj{
+			Field: key,
+			Type:  deplaitecate_TYPE_ADD,
+		})
+	}
 	return this
 }
 
@@ -563,7 +588,11 @@ func (this *SqlBuider) Add(data map[string]interface{}) (int64, error) {
 			if i > 0 {
 				onDuplicateStr.WriteString(",")
 			}
-			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
+			if val.Type == deplaitecate_TYPE_EQUAL {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val.Field))
+			} else {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = `%[1]v` + VALUES(`%[1]v`)", val.Field))
+			}
 		}
 	}
 
@@ -624,7 +653,11 @@ func (this *SqlBuider) AddMulti(_list []map[string]interface{}) (int64, error) {
 			if i > 0 {
 				onDuplicateStr.WriteString(",")
 			}
-			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
+			if val.Type == deplaitecate_TYPE_EQUAL {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val.Field))
+			} else {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = `%[1]v` + VALUES(`%[1]v`)", val.Field))
+			}
 		}
 	}
 
@@ -749,7 +782,11 @@ func (this *SqlBuider) AddTx(data map[string]interface{}) (int64, error) {
 			if i > 0 {
 				onDuplicateStr.WriteString(",")
 			}
-			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
+			if val.Type == deplaitecate_TYPE_EQUAL {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val.Field))
+			} else {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = `%[1]v` + VALUES(`%[1]v`)", val.Field))
+			}
 		}
 	}
 
@@ -1118,7 +1155,11 @@ func (this *SqlBuider) AddObj(_resp interface{}, _include_primary bool) (int64, 
 			if i > 0 {
 				onDuplicateStr.WriteString(",")
 			}
-			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
+			if val.Type == deplaitecate_TYPE_EQUAL {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val.Field))
+			} else {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = `%[1]v` + VALUES(`%[1]v`)", val.Field))
+			}
 		}
 	}
 
@@ -1142,7 +1183,11 @@ func (this *SqlBuider) AddObjMulti(_resp []interface{}, _includePrimary bool) (i
 			if i > 0 {
 				onDuplicateStr.WriteString(",")
 			}
-			onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val))
+			if val.Type == deplaitecate_TYPE_EQUAL {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = VALUES(`%[1]v`)", val.Field))
+			} else {
+				onDuplicateStr.WriteString(fmt.Sprintf("`%[1]v` = `%[1]v` + VALUES(`%[1]v`)", val.Field))
+			}
 		}
 	}
 	this.finalSql = fmt.Sprintf("INSERT INTO `%v`.`%v` (`%v`) VALUES %v %v",

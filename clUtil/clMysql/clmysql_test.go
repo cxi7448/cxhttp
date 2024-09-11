@@ -18,7 +18,10 @@ func TestSqlBuilder_Save(t *testing.T) {
 		fmt.Printf("connect to mysql failed\n")
 		return
 	}
-	_, err := db.NewBuilder().Table("test").Add(clJson.M{
+	_, err := db.NewBuilder().Table("test").OnDuplicateKey([]string{"addtime"}).OnDuplicateKeyAdd([]string{"i"}).Add(clJson.M{
+		//_, err := db.NewBuilder().Table("test").Add(clJson.M{
+		//_, err := db.NewBuilder().Table("test").OnDuplicateKey([]string{"addtime"}).Add(clJson.M{
+		//_, err := db.NewBuilder().Table("test").OnDuplicateKeyAdd([]string{"i"}).Add(clJson.M{
 		"m":       "'测试保存';",
 		"i":       1,
 		"addtime": time.Now().Unix(),
