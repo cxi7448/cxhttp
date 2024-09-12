@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -13,6 +14,10 @@ import (
 type M map[string]interface{}
 type A []interface{}
 
+func (this *M) Has(key string) bool {
+	_, ok := (*this)[key]
+	return ok
+}
 func (this *M) Get(key string) string {
 	res, ok := (*this)[key]
 	if ok {
@@ -29,9 +34,36 @@ func (this *M) Interface(key string) interface{} {
 	return nil
 }
 
+func (this *M) Float64(key string) float64 {
+	val := this.Get(key)
+	return clCommon.Float64(val)
+}
+func (this *M) Float32(key string) float32 {
+	val := this.Get(key)
+	return clCommon.Float32(val)
+}
+
+func (this *M) Int64(key string) int64 {
+	val := this.Get(key)
+	return clCommon.Int64(val)
+}
+func (this *M) Int32(key string) int32 {
+	val := this.Get(key)
+	return clCommon.Int32(val)
+}
+
 func (this *M) Uint32(key string) uint32 {
 	val := this.Get(key)
 	return parseUint32(val)
+}
+
+func (this *M) Int(key string) int {
+	val := this.Get(key)
+	return clCommon.Int(val)
+}
+func (this *M) Uint64(key string) uint64 {
+	val := this.Get(key)
+	return clCommon.Uint64(val)
 }
 
 func (this *M) GetMap(key string) M {

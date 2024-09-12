@@ -118,7 +118,10 @@ func (this *HttpClient) PostForm(fieldname, filename string, data map[string]str
 			this.request.Header.Set(key, value)
 		}
 	}
-	resp, _ := http.DefaultClient.Do(this.request)
+	resp, err := http.DefaultClient.Do(this.request)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
 	resp_body, err := io.ReadAll(resp.Body)
 	if err != nil {

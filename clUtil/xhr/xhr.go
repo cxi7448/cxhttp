@@ -88,13 +88,13 @@ func (this *XHR) Post(data clJson.M, value interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		if resp != nil && resp.Body != nil {
-			body, _ := ioutil.ReadAll(resp.Body)
-			clLog.Error("错误:%v", string(body))
-		}
-		return fmt.Errorf("错误:%v", resp.StatusCode)
-	}
+	//if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+	//	if resp != nil && resp.Body != nil {
+	//		body, _ := ioutil.ReadAll(resp.Body)
+	//		clLog.Error("错误:%v", string(body))
+	//	}
+	//	return fmt.Errorf("错误:%v", resp.StatusCode)
+	//}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		clLog.Error("ioutil.ReadAll失败:[%v]", err)
@@ -144,7 +144,7 @@ func (this *XHR) GetBody(_data ...clJson.M) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		if resp != nil && resp.Body != nil {
 			body, _ := ioutil.ReadAll(resp.Body)
 			clLog.Error("错误:%v", string(body))
@@ -192,7 +192,7 @@ func (this *XHR) Get(value interface{}, _data ...clJson.M) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		if resp != nil && resp.Body != nil {
 			body, _ := ioutil.ReadAll(resp.Body)
 			clLog.Error("错误:%v", string(body))
