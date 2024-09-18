@@ -96,8 +96,19 @@ const onDelete = (ids)=>{
   })
 }
 onMounted(()=>{
+  getInit()
   getList()
 })
+
+const getInit = ()=>{
+  proxy?.$http.post("getInit", {table:"%v"}).then((res:any)=>{
+    if (res.code == 0){
+      console.log(res.data)
+    }else{
+      ElMessage({message:res.msg,type:"error"})
+    }
+  })
+}
 
 const pager:any = ref({
   pageid:1,
@@ -105,7 +116,7 @@ const pager:any = ref({
   total:0
 })
 </script>
-`, info.GenScript(islang), info.Name, info.GetFormStr(islang), info.GetFormStr(islang), info.Name, info.Name, info.Name)
+`, info.GenScript(islang), info.Name, info.GetFormStr(islang), info.GetFormStr(islang), info.Name, info.Name, info.Name, info.Name)
 	html_template := fmt.Sprintf(`
 <template>
   <div class="search_box">
@@ -144,7 +155,7 @@ const pager:any = ref({
 
 </template>
 `, info.ElTableColumn(), info.ElFormItem(islang))
-	var content = fmt.Sprintf("%v \n %v ", js_script, html_template)
+	var content = fmt.Sprintf(" %v \n %v", html_template, js_script)
 	folder := fmt.Sprintf("%v/%v", path, info.Name)
 	os.MkdirAll(folder, 0700)
 	vue_file := fmt.Sprintf("%v/index.vue", folder)
