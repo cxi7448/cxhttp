@@ -121,7 +121,7 @@ const pager:any = ref({
 <template>
   <div class="search_box">
     <el-button @click="getList">查询</el-button>
-	<el-button @click="showDialog()">添加</el-button>
+	<el-button @click="showDialog(undefined)">添加</el-button>
 	<el-popconfirm v-if="selectRows.length > 0" title="确认删除?" @confirm="onDeleteMulti()">
       <template #reference>
         <el-button type="danger" icon="Delete">批量删除</el-button>

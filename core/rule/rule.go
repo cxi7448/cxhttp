@@ -69,6 +69,36 @@ func (this *ServerParam) IsIos() bool {
 	return xre.IsIOS(this.Header.Get("User-Agent"))
 }
 
+func (this *ServerParam) GetAuth() *clAuth.AuthInfo {
+	// 通过jwt处理登陆
+	token := this.Header.Get("Authorization")
+	if token == "" {
+		return nil
+	}
+	c, err := jwt.ParseToken(token)
+	if err != nil {
+		clLog.Error("解析jwt失败:%v", err)
+		return nil
+	}
+	if !c.IsExpire() {
+		return nil
+	}
+
+	if !c.IsEffective() {
+		return nil
+	}
+
+	if c.IsReflush() {
+		token, err = c.ReflushToken() // 刷新
+		if err != nil {
+			clLog.Error("刷新token失败:%v", err)
+		} else {
+			this.Header.Set("Authorization", token) // 会自动输入response headers中
+		}
+	}
+	return c.GetUser()
+}
+
 //@author cxhttp
 //@lastUpdate 2019-08-10
 //@comment 路由规则定义
