@@ -52,6 +52,7 @@ type SqlBuider struct {
 
 	duplicateKey []deplicateObj
 
+	join      []sqlJoin
 	leftJoin  []sqlJoin
 	rightJoin []sqlJoin
 
@@ -1050,6 +1051,20 @@ func (this *SqlBuider) LeftJoin(_tableName string, _joinCondition string) *SqlBu
 
 /*
 *
+左内联
+@param _tableName string 表名
+@param _joinCondition string 条件
+*/
+func (this *SqlBuider) Join(_tableName string, _joinCondition string) *SqlBuider {
+	this.join = append(this.join, sqlJoin{
+		TableName:     _tableName,
+		JoinCondition: _joinCondition,
+	})
+	return this
+}
+
+/*
+*
 右内联
 @param _tableName string 表名
 @param _joinCondition string 条件
@@ -1260,6 +1275,9 @@ func (this *SqlBuider) buildQuerySql() (string, error) {
 		}
 		for _, val := range this.rightJoin {
 			joinStr += fmt.Sprintf(" RIGHT JOIN %v ON (%v)", val.TableName, val.JoinCondition)
+		}
+		for _, val := range this.join {
+			joinStr += fmt.Sprintf(" JOIN %v ON (%v)", val.TableName, val.JoinCondition)
 		}
 	}
 

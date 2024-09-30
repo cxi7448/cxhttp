@@ -11,6 +11,7 @@ require (
 	github.com/farmerx/gorsa v0.0.0-20161211100049-3ae06f674f40
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/lionsoul2014/ip2region/binding/golang v0.0.0-20240510055607-89e20ab7b6c6
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/speps/go-hashids/v2 v2.0.1
@@ -36,6 +37,7 @@ require (
 	github.com/onsi/gomega v1.29.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
