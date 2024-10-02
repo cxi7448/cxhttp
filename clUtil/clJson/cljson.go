@@ -74,6 +74,10 @@ func (this *M) GetMap(key string) M {
 	return res.(map[string]interface{})
 }
 
+func (this *M) Bool(key string) bool {
+	return clCommon.Bool(this.Get(key))
+}
+
 // @author cxhttp
 // @lastUpdate 2019-08-04
 // @comment 字符串转uint32
