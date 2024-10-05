@@ -20,29 +20,30 @@ import (
 )
 
 type ServerParam struct {
-	AcName      string
-	RemoteIP    string     // 远程IP地址
-	RequestURI  string     // 请求URI
-	UriData     *HttpParam // uri上的参数列表
-	Host        string     // 请求域名
-	Method      string     // 请求方法
-	Header      http.Header
-	RequestURL  string     // 请求完整地址
-	UA          string     // 目标设备信息
-	UAType      uint32     // 目标设备类型
-	Proctol     string     // 目标协议
-	Port        string     // 端口
-	Language    string     // 使用语言信息
-	LangType    uint32     // 使用语言信息
-	ContentType string     // 提交的方式
-	RawData     string     // 原始数据
-	RawParam    *HttpParam // 原始的参数
-	Encrypt     bool       // 是否需要加密
-	IsJwt       bool       // 是否开启jwt
-	AesKey      string     // 加密用的key
-	Iv          string     // 加密用的iv
-	Request     *http.Request
-	Response    http.ResponseWriter
+	AcName        string
+	RemoteIP      string     // 远程IP地址
+	RequestURI    string     // 请求URI
+	UriData       *HttpParam // uri上的参数列表
+	Host          string     // 请求域名
+	Method        string     // 请求方法
+	Header        http.Header
+	RequestURL    string     // 请求完整地址
+	UA            string     // 目标设备信息
+	UAType        uint32     // 目标设备类型
+	Proctol       string     // 目标协议
+	Port          string     // 端口
+	Language      string     // 使用语言信息
+	LangType      uint32     // 使用语言信息
+	ContentType   string     // 提交的方式
+	RawData       string     // 原始数据
+	RawParam      *HttpParam // 原始的参数
+	Encrypt       bool       // 是否需要加密
+	IsJwt         bool       // 是否开启jwt
+	IsForceEncode bool       // 是否开启强制加密模式
+	AesKey        string     // 加密用的key
+	Iv            string     // 加密用的iv
+	Request       *http.Request
+	Response      http.ResponseWriter
 }
 
 func (this *ServerParam) JwtLogin(_auth *clAuth.AuthInfo) error {

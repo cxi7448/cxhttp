@@ -27,10 +27,17 @@ var mEnableUploadFile = false
 var mAesKey = ""
 var isJwt = true
 
+// 强制加密模式
+var isForceEncode = false
+
 // 启用上传测试页面的访问
 // 访问url为 http://your_domain/upload_test
 func SetEnableUploadTest(_enable bool) {
 	mEnableUploadTest = _enable
+}
+
+func SetIsForceEncode(force bool) {
+	isForceEncode = force
 }
 
 func SetEnableJwt(_enable bool) {
@@ -151,7 +158,7 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 		}
 	}
 
-	var isEncrypt = rq.Header.Get("Encrypt-Type") == "AES"
+	var isEncrypt = rq.Header.Get("Encrypt-Type") == "AES" || isForceEncode
 	var iv = rq.Header.Get("Encrypt-iv")
 
 	var contentType = strings.ToLower(rq.Header.Get("Content-Type"))
@@ -280,29 +287,30 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 	}
 
 	var serObj = rule.ServerParam{
-		RemoteIP:    remoteIp,
-		RequestURI:  rq.RequestURI,
-		UriData:     rule.NewHttpParam(uriValues, nil),
-		Host:        rq.Host,
-		Method:      rq.Method,
-		Header:      rq.Header,
-		RequestURL:  request_url,
-		UA:          myUA,
-		UAType:      UAToInt(myUA),
-		Proctol:     proctol,
-		Request:     rq,
-		Response:    rw,
-		Port:        "",
-		Language:    myLang,
-		LangType:    clCommon.Uint32(myLang),
-		ContentType: rq.Header.Get("Content-Type"),
-		RawData:     rawData,
-		RawParam:    rqObj,     // 原始参数
-		Encrypt:     isEncrypt, // 是否加密
-		IsJwt:       isJwt,
-		AesKey:      mAesKey,
-		AcName:      acName,
-		Iv:          iv,
+		RemoteIP:      remoteIp,
+		RequestURI:    rq.RequestURI,
+		UriData:       rule.NewHttpParam(uriValues, nil),
+		Host:          rq.Host,
+		Method:        rq.Method,
+		Header:        rq.Header,
+		RequestURL:    request_url,
+		UA:            myUA,
+		UAType:        UAToInt(myUA),
+		Proctol:       proctol,
+		Request:       rq,
+		Response:      rw,
+		Port:          "",
+		Language:      myLang,
+		LangType:      clCommon.Uint32(myLang),
+		ContentType:   rq.Header.Get("Content-Type"),
+		RawData:       rawData,
+		RawParam:      rqObj,     // 原始参数
+		Encrypt:       isEncrypt, // 是否加密
+		IsJwt:         isJwt,
+		IsForceEncode: isForceEncode,
+		AesKey:        mAesKey,
+		AcName:        acName,
+		Iv:            iv,
 	}
 	content, contentType := CallHandler(rq, &rw, requestName, rqObj, &serObj, acName)
 	if contentType == "" {
