@@ -2,8 +2,8 @@ package httpserver
 
 import (
 	"fmt"
-	"github.com/cxi7448/cxhttp/clCommon"
 	"github.com/cxi7448/cxhttp/clResponse"
+	"github.com/cxi7448/cxhttp/clUtil/clCommon"
 	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
 	"github.com/cxi7448/cxhttp/clUtil/clJson"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
@@ -160,6 +160,10 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 
 	var isEncrypt = rq.Header.Get("Encrypt-Type") == "AES" || isForceEncode
 	var iv = rq.Header.Get("Encrypt-iv")
+	if isEncrypt && iv == "" {
+		// 初始化iv
+		iv = clCommon.GenNonceStr(16)
+	}
 
 	var contentType = strings.ToLower(rq.Header.Get("Content-Type"))
 	var values = make(map[string]string)
