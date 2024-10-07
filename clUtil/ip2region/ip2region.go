@@ -6,6 +6,7 @@ import (
 )
 
 var xdb *geoip2.Reader
+var dbUrl = "clUtil/ip2region/GeoIP2-City.mmdb"
 
 // "github.com/lionsoul2014/ip2region/binding/golang/xdb"
 func LoadFromFile(dbPath string) error {
