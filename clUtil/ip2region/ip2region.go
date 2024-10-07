@@ -1,70 +1,52 @@
 package ip2region
 
 import (
-	"fmt"
-	"github.com/lionsoul2014/ip2region/binding/golang/xdb"
-	"strings"
+	"github.com/oschwald/geoip2-golang"
+	"net"
 )
 
-var xdbSearcher *xdb.Searcher
+var xdb *geoip2.Reader
 
 // "github.com/lionsoul2014/ip2region/binding/golang/xdb"
 func LoadFromFile(dbPath string) error {
-	cBuff, err := xdb.LoadContentFromFile(dbPath)
+	db, err := geoip2.Open(dbPath)
 	if err != nil {
 		return err
 	}
-	searcher, err := xdb.NewWithBuffer(cBuff)
-	if err != nil {
-		return err
-	}
-	xdbSearcher = searcher
+	xdb = db
 	return nil
 }
 
-type Ip struct {
+type XIP struct {
 	IP       string
 	Country  string
 	Err      error
 	Province string
 	City     string
-	Origin   string
+	Record   *geoip2.City
 }
 
-func Get(ip string) Ip {
-	result := Ip{IP: ip, Country: "中国"}
-	// 中国|0|香港|0|联通
-	// 国家|区域|省份|城市|ISP
-	if xdbSearcher == nil {
-		result.Err = fmt.Errorf("xdb error")
+func Get(ip string) XIP {
+	result := XIP{}
+	record, err := xdb.City(net.ParseIP(ip))
+	if err != nil {
+		result.Err = err
 		return result
 	}
-	res, err := xdbSearcher.SearchByStr(ip)
-	if err == nil {
-		rows := strings.Split(res, "|")
-		if len(rows) > 0 {
-			result.Country = rows[0]
+	result.Country = record.Country.Names["zh-CN"]
+	result.Record = record
+	if result.Country == "" {
+		result.Country = record.Country.Names["en"]
+	}
+	result.City = record.City.Names["zh-CN"]
+	if result.City == "" {
+		result.City = record.City.Names["en"]
+	}
+	if len(record.Subdivisions) > 0 {
+		result.Province = record.Subdivisions[0].Names["zh-CN"]
+		if result.Province == "" {
+			result.Province = record.Subdivisions[0].Names["en"]
 		}
-		if len(rows) > 2 {
-			result.Province = rows[2]
-		}
-		if len(rows) > 3 {
-			result.City = rows[3]
-		}
-		result.Origin = res
-	} else {
-		result.Err = err
 	}
 	return result
-}
-
-func (this Ip) GetLang() string {
-	switch this.Country {
-	case "中国":
-		return "CN"
-	case "泰国":
-		return "THA"
-	default:
-		return "EN"
-	}
 }

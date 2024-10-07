@@ -14,6 +14,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/lionsoul2014/ip2region/binding/golang v0.0.0-20240510055607-89e20ab7b6c6
 	github.com/minio/minio-go v6.0.14+incompatible
+	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/tencentcloud/tencentcloud-sdk-go-intl-en v3.0.939+incompatible
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
@@ -35,12 +36,12 @@ require (
 	github.com/mozillazg/go-httpheader v0.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.29.0 // indirect
+	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 // indirect
