@@ -6,7 +6,7 @@ import (
 )
 
 var xdb *geoip2.Reader
-var dbUrl = "clUtil/ip2region/GeoIP2-City.mmdb"
+var dbUrl = "https://github.com/cxi7448/cxhttp/raw/refs/heads/main/clUtil/ip2region/GeoIP2-City.mmdb.gz"
 
 // "github.com/lionsoul2014/ip2region/binding/golang/xdb"
 func LoadFromFile(dbPath string) error {
@@ -29,6 +29,9 @@ type XIP struct {
 
 func Get(ip string) XIP {
 	result := XIP{}
+	if xdb == nil {
+		return result
+	}
 	record, err := xdb.City(net.ParseIP(ip))
 	if err != nil {
 		result.Err = err
