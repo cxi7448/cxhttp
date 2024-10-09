@@ -72,7 +72,7 @@ const onSubmit = ()=>{
 }
 
 const selectRows:any = ref([])
-const selectChange = (rows)=>{
+const selectChange = (rows:any)=>{
   selectRows.value = rows
 }
 const onDeleteMulti = ()=>{
@@ -85,7 +85,7 @@ const onDeleteMulti = ()=>{
 	}
 	onDelete(ids.join(","))
 }
-const onDelete = (ids)=>{
+const onDelete = (ids:any)=>{
   let ac = "%v_delete"
   proxy?.$http.post(ac,{ids:ids}).then((res:any)=>{
     if (res.code == 0){

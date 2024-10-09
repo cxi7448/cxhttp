@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/cxi7448/cxhttp/clGlobal"
+	"github.com/cxi7448/cxhttp/clUtil/clFile"
 	"github.com/cxi7448/cxhttp/clUtil/clLog"
 	"github.com/cxi7448/cxhttp/clUtil/xbuild"
 	"os"
@@ -126,16 +127,27 @@ func buildApi() {
 }
 
 func buildTable() {
-	for _, arg := range os.Args[2:] {
-		if arg == "" {
+	for _, table := range os.Args[2:] {
+		if table == "" {
 			continue
 		}
-		result, err := xbuild.BuildModel(arg)
+		result, err := xbuild.BuildModel(table)
 		if err != nil {
 			clLog.Error("错误:%v", err)
 			continue
 		}
-		fmt.Printf("const Table = \"%v\"\n", arg)
+		content := fmt.Sprintf("package %v \n", table)
+		content += fmt.Sprintf("const Table = \"%v\"\n", table)
+		content += result
+		model := "src/table"
+		model += "/" + table
+		modelFile := fmt.Sprintf("%v/%v_model.go", model, table)
+		// 创建模型文件
+		if !clFile.IsFile(modelFile) {
+			// 自动生成，存在就不生成了
+			os.WriteFile(modelFile, []byte(content), 0700)
+		}
+		fmt.Printf("const Table = \"%v\"\n", table)
 		fmt.Println(result)
 		fmt.Println()
 	}
