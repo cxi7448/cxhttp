@@ -145,6 +145,7 @@ func buildTable() {
 		// 创建模型文件
 		if !clFile.IsFile(modelFile) {
 			// 自动生成，存在就不生成了
+			os.MkdirAll(model, 0700)
 			os.WriteFile(modelFile, []byte(content), 0700)
 		}
 		fmt.Printf("const Table = \"%v\"\n", table)
