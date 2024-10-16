@@ -37,15 +37,18 @@ func SetPrefix(prefix string) {
 	JWT_PREFIX = "JWT_" + prefix + "_"
 }
 
-func (this Claims) SaveToRedis() {
+func (this Claims) SaveToRedisByPrefix(prefix string) {
 	redis := clGlobal.GetRedis()
 	if redis == nil {
 		return
 	}
-	err := redis.Set(fmt.Sprintf("%v%v", JWT_PREFIX, this.UserInfo.Uid), this.UserInfo, int32(TokenExpireDuration))
+	err := redis.Set(fmt.Sprintf("%v%v", prefix, this.UserInfo.Uid), this.UserInfo, int32(TokenExpireDuration))
 	if err != nil {
 		clLog.Error("存入redis失败:%v", err)
 	}
+}
+func (this Claims) SaveToRedis() {
+	this.SaveToRedisByPrefix(JWT_PREFIX)
 }
 
 // 从redis中校验，redis不存在的时候，表示有效，存在的时候比对签名，签名一样的有效，不一样的无效
@@ -107,6 +110,25 @@ func GenToken(user *clAuth.AuthInfo) (string, error) {
 	}
 	c.SaveToRedis()
 	return result, nil
+}
+
+func NewToken(user *clAuth.AuthInfo) (*Claims, error) {
+	now := time.Now().Unix()
+	c := Claims{
+		CreateTime:  now,
+		ReflushTime: now + TokenReflushDuration,
+		UserInfo: &UserInfo{
+			Uid:       user.Uid,
+			Token:     user.Token,
+			ExtraData: user.ExtraData,
+		},
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: now + TokenExpireDuration,
+			Issuer:    "goapi",
+			Subject:   "test",
+		},
+	}
+	return &c, nil
 }
 
 // 解析token
