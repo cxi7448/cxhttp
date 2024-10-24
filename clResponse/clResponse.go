@@ -59,6 +59,14 @@ func JCodeByLang(_langType, _msg uint32, _data interface{}, _param ...interface{
 	return string(resp)
 }
 
+func JCodeI18n(code uint32, data ...interface{}) string {
+	resp, _ := json.Marshal(SkyResp{
+		Code: code,
+		Data: data,
+	})
+	return string(resp)
+}
+
 // 返回自定义内容
 func Diy(_diyContent string) string {
 	return _diyContent
