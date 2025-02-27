@@ -66,6 +66,14 @@ func (this *M) Uint64(key string) uint64 {
 	return clCommon.Uint64(val)
 }
 
+func (this *M) GetArray(key string) A {
+	res, ok := (*this)[key]
+	if !ok {
+		return nil
+	}
+	return res.(A)
+}
+
 func (this *M) GetMap(key string) M {
 	res, ok := (*this)[key]
 	if !ok {

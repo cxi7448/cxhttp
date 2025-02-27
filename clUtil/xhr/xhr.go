@@ -16,7 +16,8 @@ type XHR struct {
 	Method      string
 	Body        string
 	ContentType string
-	data        clJson.M
+	Debug       bool
+	data        interface{}
 	headers     clJson.M
 }
 
@@ -35,6 +36,10 @@ func (this *XHR) SetContentType(content_type string) *XHR {
 	this.ContentType = content_type
 	return this
 }
+func (this *XHR) SetDebug(debug bool) *XHR {
+	this.Debug = debug
+	return this
+}
 func (this *XHR) SetHeaders(headers clJson.M) *XHR {
 	this.headers = headers
 	return this
@@ -47,6 +52,51 @@ func (this *XHR) SetJSON() *XHR {
 func (this *XHR) SetFORM() *XHR {
 	this.SetContentType(ContentTypeFORM)
 	return this
+}
+
+func (this *XHR) PostBody(data interface{}, value interface{}) error {
+	this.SetJSON()
+	var reqBody *strings.Reader
+	var printData = ""
+	this.data = data
+	content, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	reqBody = strings.NewReader(string(content))
+	printData = string(content)
+	if this.Debug {
+		clLog.Info("POST:%v [%v] [%v]", this.URL, this.ContentType, printData)
+	}
+	request, err := http.NewRequest("POST", this.URL, reqBody)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("content-type", this.ContentType)
+	if len(this.headers) > 0 {
+		for key, val := range this.headers {
+			request.Header.Add(key, fmt.Sprint(val))
+		}
+	}
+	client := http.Client{}
+	resp, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		clLog.Error("ioutil.ReadAll失败:[%v]", err)
+		return err
+	}
+	this.Body = string(body)
+	err = json.Unmarshal(body, value)
+	if err != nil {
+		clLog.Error("Unmarshal失败:[%v]", err)
+		clLog.Error("Unmarshal失败:[%v]", string(body))
+		return err
+	}
+	return nil
 }
 
 func (this *XHR) Post(data clJson.M, value interface{}) error {
@@ -71,7 +121,9 @@ func (this *XHR) Post(data clJson.M, value interface{}) error {
 		printData = form.Encode()
 		reqBody = strings.NewReader(form.Encode())
 	}
-	clLog.Info("POST:%v [%v] [%v]", this.URL, this.ContentType, printData)
+	if this.Debug {
+		clLog.Info("POST:%v [%v] [%v]", this.URL, this.ContentType, printData)
+	}
 	request, err := http.NewRequest("POST", this.URL, reqBody)
 	if err != nil {
 		return err
@@ -88,13 +140,6 @@ func (this *XHR) Post(data clJson.M, value interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
-	//if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-	//	if resp != nil && resp.Body != nil {
-	//		body, _ := ioutil.ReadAll(resp.Body)
-	//		clLog.Error("错误:%v", string(body))
-	//	}
-	//	return fmt.Errorf("错误:%v", resp.StatusCode)
-	//}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		clLog.Error("ioutil.ReadAll失败:[%v]", err)
@@ -125,7 +170,9 @@ func (this *XHR) GetBody(_data ...clJson.M) ([]byte, error) {
 			reqUrl += "?" + form.Encode()
 		}
 	}
-	clLog.Info("GET:%v", reqUrl)
+	if this.Debug {
+		clLog.Info("GET:%v", reqUrl)
+	}
 	request, err := http.NewRequest("GET", reqUrl, nil)
 	if err != nil {
 		return nil, err
@@ -174,7 +221,9 @@ func (this *XHR) Get(value interface{}, _data ...clJson.M) error {
 			reqUrl += "?" + form.Encode()
 		}
 	}
-	clLog.Info("GET:%v", reqUrl)
+	if this.Debug {
+		clLog.Info("GET:%v", reqUrl)
+	}
 	request, err := http.NewRequest("GET", reqUrl, nil)
 	if err != nil {
 		return err
