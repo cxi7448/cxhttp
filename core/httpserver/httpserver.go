@@ -218,6 +218,23 @@ func rootHandler(rw http.ResponseWriter, rq *http.Request) {
 				}
 			}
 		}
+		if len(values) == 0 {
+			rq.ParseMultipartForm(uploadFileSizeLimit)
+			if len(rq.Form) > 0 {
+				for key, val := range rq.Form {
+					if len(val) == 1 {
+						values[key] = val[0]
+					}
+				}
+			}
+			if len(rq.PostForm) > 0 {
+				for key, val := range rq.PostForm {
+					if len(val) == 1 {
+						values[key] = val[0]
+					}
+				}
+			}
+		}
 	} else if strings.Contains(contentType, "text/xml") {
 		var xmlBytes = make([]byte, postBodySize)
 		n, err := rq.Body.Read(xmlBytes)

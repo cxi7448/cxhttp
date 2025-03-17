@@ -1,30 +1,30 @@
 package httpserver
 
 import (
-	"github.com/cxi7448/cxhttp/clUtil/clCrypt"
-	"github.com/cxi7448/cxhttp/clUtil/clHttpClient"
-	"github.com/cxi7448/cxhttp/clUtil/clJson"
-	"github.com/cxi7448/cxhttp/clUtil/clLog"
+	"fmt"
+	"github.com/cxi7448/cxhttp/clResponse"
+	"github.com/cxi7448/cxhttp/core/clAuth"
+	"github.com/cxi7448/cxhttp/core/rule"
 	"testing"
 )
 
 func TestCallHandler(t *testing.T) {
 
-	var aesKey = "5d41402abc4b2a76b9719d911017c592"
-	var iv = "5d41222402abc4b222a76b9719d911017c592"
-	var data = clJson.CreateBy(clJson.M{"k": "hello world!!"}).ToStr()
-	hc := clHttpClient.NewClient("http://127.0.0.1:19999/request")
-	hc.SetContentType(clHttpClient.ContentJson)
-	hc.AddHeader("Encrypt-Type", "AES")
-	hc.AddHeader("Encrypt-iv", iv)
-	hc.SetBody(clCrypt.AesCBCEncode(data, aesKey, iv))
-	resp, err := hc.Do()
-	if err != nil {
-		clLog.Error("请求错误: %v", err)
-		return
-	}
-	clLog.Debug("Resp: %+v", resp.Body)
-	decodeStr := clCrypt.AesCBCDecode([]byte(resp.Body), []byte(aesKey), []byte(iv))
-	clLog.Debug("Resp Decode: %+v", decodeStr)
-
+	rule.AddRule(rule.Rule{
+		Request: "request",
+		Name:    "paycallback",
+		Params:  nil,
+		CallBack: func(_auth *clAuth.AuthInfo, _param *rule.HttpParam, _server *rule.ServerParam) string {
+			fmt.Println(_param.ToMap())
+			fmt.Println(_server.RawData)
+			return clResponse.Success()
+		},
+		CacheExpire:   0,
+		CacheType:     0,
+		CacheKeyParam: nil,
+		Login:         false,
+		Method:        "",
+		RespContent:   "",
+	})
+	StartServer(9001)
 }
