@@ -1,8 +1,6 @@
 module github.com/cxi7448/cxhttp
 
-go 1.22
-
-toolchain go1.24.1
+go 1.20
 
 require (
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.1+incompatible
