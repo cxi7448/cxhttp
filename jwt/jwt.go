@@ -137,7 +137,6 @@ func ParseToken(tokenStr string) (*Claims, error) {
 		return SecretKey, nil
 	})
 	if err != nil {
-		clLog.Error("错误了:%v", err)
 		return nil, err
 	}
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {

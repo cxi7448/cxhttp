@@ -78,7 +78,6 @@ func (this *ServerParam) GetAuth() *clAuth.AuthInfo {
 	}
 	c, err := jwt.ParseToken(token)
 	if err != nil {
-		clLog.Error("解析jwt失败:%v", err)
 		return nil
 	}
 	if !c.IsExpire() {
